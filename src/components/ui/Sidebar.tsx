@@ -17,6 +17,7 @@ interface Props {
 const navItems = [
   { href: "/dashboard", label: "ホーム", icon: "🏠" },
   { href: "/notes/new", label: "週案を作成", icon: "✍️", highlight: true },
+  { href: "/notes", label: "週案一覧", icon: "📋" },
   { href: "/feed", label: "フィード", icon: "🌐" },
   { href: "/settings", label: "設定", icon: "⚙️" },
 ];
@@ -37,8 +38,7 @@ export function Sidebar({ user }: Props) {
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map(({ href, label, icon, highlight }) => {
-          const isActive =
-            href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+          const isActive = pathname === href;
           return (
             <Link
               key={href}
