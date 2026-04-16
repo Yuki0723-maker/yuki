@@ -1,13 +1,27 @@
-import type { AgeGroup } from "@prisma/client";
+export function getWeekStart(date = new Date()): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
 
-export const AGE_GROUP_LABELS: Record<AgeGroup, string> = {
-  AGE_0: "0歳児",
-  AGE_1: "1歳児",
-  AGE_2: "2歳児",
-  AGE_3: "3歳児",
-  AGE_4: "4歳児",
-  AGE_5: "5歳児",
-  MIXED: "縦割り",
+export function formatWeekRange(weekStart: Date | string): string {
+  const start = new Date(weekStart);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 4);
+  const fmt = (d: Date) => `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  return `${fmt(start)} 〜 ${end.getMonth() + 1}月${end.getDate()}日`;
+}
+
+export const AGE_LABELS: Record<number, string> = {
+  0: "0歳児",
+  1: "1歳児",
+  2: "2歳児",
+  3: "3歳児",
+  4: "4歳児",
+  5: "5歳児",
 };
 
 export const SEASON_LABELS: Record<string, string> = {
@@ -17,24 +31,8 @@ export const SEASON_LABELS: Record<string, string> = {
   winter: "冬（12〜2月）",
 };
 
-export function getWeekStart(date: Date = new Date()): Date {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-export function formatWeekRange(weekStart: Date): string {
-  const start = new Date(weekStart);
-  const end = new Date(weekStart);
-  end.setDate(end.getDate() + 4);
-  return `${start.getFullYear()}年${start.getMonth() + 1}月${start.getDate()}日 〜 ${end.getMonth() + 1}月${end.getDate()}日`;
-}
-
-export function getSeason(date: Date = new Date()): string {
-  const month = date.getMonth() + 1;
+export function getSeason(): string {
+  const month = new Date().getMonth() + 1;
   if (month >= 3 && month <= 5) return "spring";
   if (month >= 6 && month <= 8) return "summer";
   if (month >= 9 && month <= 11) return "autumn";

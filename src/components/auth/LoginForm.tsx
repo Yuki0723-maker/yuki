@@ -1,83 +1,40 @@
 "use client";
 
-import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 export function LoginForm() {
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setLoading(true);
-    await signIn("resend", { email, redirect: false });
-    setSent(true);
-    setLoading(false);
-  };
 
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/dashboard" });
+    setLoading(true);
+    signIn("google", { callbackUrl: "/plans" });
   };
 
-  if (sent) {
-    return (
-      <div className="text-center py-4">
-        <div className="text-4xl mb-4">📧</div>
-        <h3 className="font-bold text-gray-800 mb-2">メールを送信しました</h3>
-        <p className="text-sm text-gray-500">
-          {email} にログインリンクを送りました。
-          <br />
-          メールボックスをご確認ください。
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      {/* Google */}
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-lg font-bold text-gray-900">ログイン / 新規登録</h2>
+        <p className="text-sm text-gray-500 mt-1">Googleアカウントで即時利用開始</p>
+      </div>
+
       <button
         onClick={handleGoogleLogin}
-        className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+        disabled={loading}
+        className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
+        style={{ minHeight: "52px" }}
       >
         <GoogleIcon />
-        Googleでログイン
+        {loading ? "ログイン中..." : "Googleでログイン"}
       </button>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-100" />
-        </div>
-        <div className="relative flex justify-center text-xs">
-          <span className="bg-white px-3 text-gray-400">または</span>
-        </div>
-      </div>
-
-      {/* Email magic link */}
-      <form onSubmit={handleEmailLogin} className="space-y-3">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            メールアドレス
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="you@example.com"
-            className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-600 text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 cursor-pointer"
-        >
-          {loading ? "送信中..." : "メールでログイン"}
-        </button>
-      </form>
+      <p className="text-center text-xs text-gray-400">
+        ログインすることで
+        <a href="#" className="text-green-600 hover:underline mx-0.5">利用規約</a>
+        および
+        <a href="#" className="text-green-600 hover:underline mx-0.5">プライバシーポリシー</a>
+        に同意したものとみなします
+      </p>
     </div>
   );
 }

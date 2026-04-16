@@ -1,81 +1,100 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { AgeGroup } from "@prisma/client";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const AGE_GROUP_LABELS: Record<AgeGroup, string> = {
-  AGE_0: "0歳児",
-  AGE_1: "1歳児",
-  AGE_2: "2歳児",
-  AGE_3: "3歳児",
-  AGE_4: "4歳児",
-  AGE_5: "5歳児",
-  MIXED: "縦割り保育",
-};
+const PLAN_SYSTEM_PROMPT = `あなたは経験豊富な保育士・保育主任です。
+以下のルールに従って週案を作成してください。
 
-const SYSTEM_PROMPT = `あなたは保育の専門家です。「保育所保育指針」（厚生労働省）および「幼保連携型認定こども園教育・保育要領」に基づいた指導計画を作成します。
+【準拠する文書】
+- 保育所保育指針（厚生労働省・2018年改定）
+- 幼保連携型認定こども園教育・保育要領（2018年改定）
 
-## 作成原則
-- 子ども主体の保育観を反映した文言を使用する
-- 「子どもが〜できるよう」「子どもの〜を大切にしながら」など、子どもの主体性・自発性を尊重する表現を用いる
-- 保育者は「援助者」「環境を構成する者」として記述する
-- 保育所保育指針の5領域（健康・人間関係・環境・言葉・表現）を意識した内容にする
-- 発達段階に応じた具体的な内容・援助を記述する
-
-## 出力形式
-必ず以下のJSON形式で出力すること：
+【出力ルール】
+- 対象年齢に合った発達段階の文言を使うこと
+- 保育士らしい自然な文体で書くこと
+- 固有名詞（人名・園名）は出力に含めないこと
+- 以下のJSON形式のみで出力すること（前後のマークダウン・説明文不要）
 
 {
-  "aims": "ねらい（箇条書き、2〜3項目）",
-  "content": "内容（具体的な活動内容、3〜5項目）",
-  "support": "保育者の援助（具体的な援助方法、3〜5項目）",
-  "environment": "環境構成（物的・人的・空間的環境、2〜4項目）"
-}
+  "goal": "ねらいの文章",
+  "content": "内容の文章",
+  "environment": "環境構成の文章",
+  "support": "保育者の援助の文章",
+  "guidelineRef": "保育所保育指針 第2章 ○歳児 ○○に関する記述"
+}`;
 
-各項目は改行区切りの箇条書きで記述すること。JSONのみを返し、マークダウンのコードブロックは使わないこと。`;
+const TEMPLATE_SYSTEM_PROMPT = `あなたは帳票レイアウト解析の専門家です。
+保育園の指導計画フォーマット（PDFのテキスト抽出結果）を読み取り、
+各フィールドの位置と役割を特定してください。
 
-export interface PlanContent {
-  aims: string;
+以下のJSONフォーマットのみで出力してください：
+{
+  "paperSize": "A4",
+  "orientation": "portrait",
+  "fields": {
+    "title":       { "label": "書類タイトル", "region": "top" },
+    "weekDate":    { "label": "週の日付欄", "region": "header" },
+    "targetAge":   { "label": "対象年齢欄", "region": "header" },
+    "goal":        { "label": "ねらい欄", "region": "body", "order": 1 },
+    "content":     { "label": "内容欄", "region": "body", "order": 2 },
+    "environment": { "label": "環境構成欄", "region": "body", "order": 3 },
+    "support":     { "label": "保育者の援助欄", "region": "body", "order": 4 },
+    "reflection":  { "label": "振り返り欄（あれば）", "region": "footer" }
+  },
+  "notes": "特記事項"
+}`;
+
+export interface GeneratedPlan {
+  goal: string;
   content: string;
-  support: string;
   environment: string;
+  support: string;
+  guidelineRef: string;
 }
 
-export async function generatePlan(params: {
-  weeklyContent: string;
-  ageGroup?: AgeGroup | null;
-  season?: string | null;
-  themes?: string[];
-}): Promise<PlanContent> {
-  const { weeklyContent, ageGroup, season, themes } = params;
+export async function generateWeeklyPlan(params: {
+  age: number;
+  maskedMemo: string;
+  nextWeekMemo?: string;
+}): Promise<GeneratedPlan> {
+  const { age, maskedMemo, nextWeekMemo } = params;
 
-  const ageLabel = ageGroup ? AGE_GROUP_LABELS[ageGroup] : "指定なし";
-  const seasonLabel = season ?? "指定なし";
-  const themeLabel = themes && themes.length > 0 ? themes.join("、") : "なし";
-
-  const userMessage = `以下の週の様子をもとに、今週の指導計画を作成してください。
-
-【対象年齢】${ageLabel}
-【季節】${seasonLabel}
-【テーマ・キーワード】${themeLabel}
-
-【週の様子メモ】
-${weeklyContent}
-
-上記の内容を踏まえ、保育所保育指針に準拠した指導計画（ねらい・内容・保育者の援助・環境構成）をJSON形式で作成してください。`;
+  const userMessage = `対象年齢：${age}歳児
+今週の子どもの様子：
+${maskedMemo}
+${nextWeekMemo ? `\n来週に向けて：\n${nextWeekMemo}` : ""}`;
 
   const message = await client.messages.create({
-    model: "claude-sonnet-4-6",
+    model: "claude-sonnet-4-20250514",
     max_tokens: 2000,
-    system: SYSTEM_PROMPT,
+    system: PLAN_SYSTEM_PROMPT,
     messages: [{ role: "user", content: userMessage }],
   });
 
-  const text =
-    message.content[0].type === "text" ? message.content[0].text : "";
+  const text = message.content[0].type === "text" ? message.content[0].text : "{}";
+  return JSON.parse(text) as GeneratedPlan;
+}
 
-  const parsed = JSON.parse(text) as PlanContent;
-  return parsed;
+export interface TemplateLayout {
+  paperSize: string;
+  orientation: string;
+  fields: Record<string, { label: string; region: string; order?: number }>;
+  notes: string;
+}
+
+export async function analyzeTemplateLayout(pdfText: string): Promise<TemplateLayout> {
+  const message = await client.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 1000,
+    system: TEMPLATE_SYSTEM_PROMPT,
+    messages: [
+      {
+        role: "user",
+        content: `以下はPDFから抽出したテキストです。レイアウトを解析してください：\n\n${pdfText}`,
+      },
+    ],
+  });
+
+  const text = message.content[0].type === "text" ? message.content[0].text : "{}";
+  return JSON.parse(text) as TemplateLayout;
 }

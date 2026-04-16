@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function HomePage() {
   const session = await auth();
-  if (session) redirect("/dashboard");
+  if (session) redirect("/plans");
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
@@ -14,47 +14,38 @@ export default async function HomePage() {
           <span className="text-2xl">🌱</span>
           <span className="text-xl font-bold text-green-800">HoikuNote</span>
         </div>
-        <div className="flex items-center gap-3">
-          <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900 font-medium">
-            ログイン
-          </Link>
-          <Link
-            href="/register"
-            className="text-sm bg-green-600 text-white px-4 py-2 rounded-full font-medium hover:bg-green-700 transition-colors"
-          >
-            無料で始める
-          </Link>
-        </div>
+        <Link
+          href="/login"
+          className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-green-700 transition-colors"
+          style={{ minHeight: "44px", display: "flex", alignItems: "center" }}
+        >
+          Googleでログイン
+        </Link>
       </header>
 
       {/* Hero */}
       <section className="max-w-4xl mx-auto px-6 pt-16 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+        <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-6">
           <span>✨</span>
-          <span>AI × 保育の新しいカタチ</span>
+          <span>入力30秒、週案5分で完成</span>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
-          週の様子を書くだけで
+          走り書きメモが
           <br />
-          <span className="text-green-600">指導計画が完成</span>する
+          <span className="text-green-600">指導計画に変わる</span>
         </h1>
         <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-          HoikuNoteは、保育士さんの日々の記録をAIが分析し、保育所保育指針に準拠した指導計画（ねらい・内容・援助・環境構成）を自動生成。全国の保育士と活動アイデアを共有できるコミュニティプラットフォームです。
+          保育士が子どもたちの様子を書くだけで、AIが保育指針に準拠した週案（ねらい・内容・環境・援助）を自動作成。
+          LINEで送ってもOK。各園のフォーマットでPDF出力も可能。
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/register"
-            className="bg-green-600 text-white px-8 py-3.5 rounded-full font-semibold hover:bg-green-700 transition-colors text-base"
-          >
-            無料で始める →
-          </Link>
-          <Link
-            href="/login"
-            className="border border-gray-200 text-gray-700 px-8 py-3.5 rounded-full font-semibold hover:bg-gray-50 transition-colors text-base"
-          >
-            ログイン
-          </Link>
-        </div>
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-2 bg-green-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-green-700 transition-colors"
+          style={{ minHeight: "56px" }}
+        >
+          無料で始める →
+        </Link>
+        <p className="mt-3 text-xs text-gray-400">Googleアカウントで即時登録・完全無料</p>
       </section>
 
       {/* Features */}
@@ -63,30 +54,29 @@ export default async function HomePage() {
           {[
             {
               icon: "✍️",
-              title: "書くのは週の様子だけ",
-              desc: "子どもたちの様子を自由記述するだけ。AIが保育所保育指針に準拠した指導計画を自動生成します。",
+              title: "書くのは子どもの様子だけ",
+              desc: "体言止め・走り書きOK。LINEで送るだけでも保存されます。AIが保育指針に準拠した週案を自動生成。",
+            },
+            {
+              icon: "📄",
+              title: "園のフォーマットでPDF出力",
+              desc: "自園の週案・月案フォーマットPDFをアップロードするだけで、そのレイアウトで印刷できます。",
             },
             {
               icon: "🤝",
-              title: "全国の保育士と共有",
-              desc: "活動アイデアや週案を会員間で共有。年齢別・テーマ別の掲示板で悩みを解決できます。",
-            },
-            {
-              icon: "🔒",
-              title: "個人情報は守られる",
-              desc: "子どもの名前・園名などの個人情報はフィードに公開されません。公開範囲を自分で設定できます。",
+              title: "全国の保育士とつながる",
+              desc: "活動アイデアや保育の悩みを全国の仲間と共有。個人名・園名は自動マスキング。",
             },
           ].map(({ icon, title, desc }) => (
             <div key={title} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <div className="text-3xl mb-4">{icon}</div>
-              <h3 className="font-bold text-gray-800 mb-2">{title}</h3>
+              <h3 className="font-bold text-gray-800 mb-2 text-base">{title}</h3>
               <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="border-t border-gray-100 py-8 text-center text-sm text-gray-400">
         © 2025 HoikuNote. All rights reserved.
       </footer>
