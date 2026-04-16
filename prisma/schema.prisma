@@ -1,0 +1,224 @@
+// HoikuNote — Prisma Schema
+// 保育士コミュニティ型・指導計画支援プラットフォーム
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ユーザー関連
+// ─────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  role          Role      @default(TEACHER)
+
+  // 保育士プロフィール
+  displayName   String?         // 公開名（本名非表示）
+  prefecture    String?         // 都道府県
+  ageGroup      AgeGroup?       // 主な担当年齢
+  bio           String?         // 自己紹介
+  yearsExp      Int?            // 経験年数
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  accounts    Account[]
+  sessions    Session[]
+  weeklyNotes WeeklyNote[]
+  plans       Plan[]
+  posts       Post[]
+  likes       Like[]
+  savedPosts  SavedPost[]
+  comments    Comment[]
+}
+
+enum Role {
+  TEACHER
+  ADMIN
+}
+
+enum AgeGroup {
+  AGE_0  // 0歳児
+  AGE_1  // 1歳児
+  AGE_2  // 2歳児
+  AGE_3  // 3歳児
+  AGE_4  // 4歳児
+  AGE_5  // 5歳児
+  MIXED  // 縦割り
+}
+
+// ─────────────────────────────────────────────
+// 週の様子メモ（AI生成の入力）
+// ─────────────────────────────────────────────
+
+model WeeklyNote {
+  id        String   @id @default(cuid())
+  userId    String
+  weekStart DateTime // 週の開始日（月曜日）
+  content   String   @db.Text  // 週の様子（自由記述）
+  ageGroup  AgeGroup?
+  theme     String[] // キーワード・テーマ
+  season    String?  // 季節（spring/summer/autumn/winter）
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan?
+
+  @@index([userId, weekStart])
+}
+
+// ─────────────────────────────────────────────
+// AI生成された指導計画
+// ─────────────────────────────────────────────
+
+model Plan {
+  id           String     @id @default(cuid())
+  userId       String
+  weeklyNoteId String     @unique
+  visibility   Visibility @default(PRIVATE)
+
+  // 指導計画の本体（保育所保育指針準拠の文言）
+  aims         String @db.Text  // ねらい
+  content      String @db.Text  // 内容
+  support      String @db.Text  // 保育者の援助
+  environment  String @db.Text  // 環境構成
+
+  // 編集済みフラグ
+  isEdited     Boolean @default(false)
+  // AI生成後ユーザーが評価・反省を追記
+  evaluation   String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeklyNote WeeklyNote @relation(fields: [weeklyNoteId], references: [id], onDelete: Cascade)
+  posts      Post[]
+
+  @@index([userId])
+  @@index([visibility, createdAt])
+}
+
+enum Visibility {
+  PUBLIC       // 全体公開
+  MEMBERS_ONLY // 会員限定
+  PRIVATE      // 非公開（本人のみ）
+}
+
+// ─────────────────────────────────────────────
+// コミュニティ投稿（Phase 2）
+// ─────────────────────────────────────────────
+
+model Post {
+  id         String     @id @default(cuid())
+  userId     String
+  planId     String?    // 週案から投稿する場合
+  title      String
+  body       String     @db.Text
+  ageGroup   AgeGroup?
+  tags       String[]   // テーマタグ（例: 自然遊び, 製作, 音楽）
+  visibility Visibility @default(PUBLIC)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan     Plan?       @relation(fields: [planId], references: [id], onDelete: SetNull)
+  likes    Like[]
+  savedBy  SavedPost[]
+  comments Comment[]
+
+  @@index([visibility, createdAt])
+  @@index([ageGroup, createdAt])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model SavedPost {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+}
+
+// ─────────────────────────────────────────────
+// NextAuth.js 必須モデル
+// ─────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
