@@ -1,24 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-petal-50: #fff0f6;
-  --color-petal-100: #ffe0ee;
-  --color-petal-200: #ffc2d9;
-  --color-petal-300: #ffa0c2;
-  --color-petal-400: #f472b6;
-  --color-petal-500: #ec4899;
-  --color-petal-600: #db2777;
-  --color-petal-700: #be185d;
+  --color-cream-50: #faf8f3;
+  --color-cream-100: #f5f0e8;
+  --color-cream-200: #ece4d4;
+  --color-cream-300: #ddd0b8;
 
-  --color-lav-50: #f5f3ff;
-  --color-lav-100: #ede9fe;
-  --color-lav-200: #ddd6fe;
-  --color-lav-400: #a78bfa;
-  --color-lav-500: #8b5cf6;
-  --color-lav-600: #7c3aed;
+  --color-warm-300: #e8a87c;
+  --color-warm-400: #d4845a;
+  --color-warm-500: #c4704a;
+  --color-warm-600: #a85c38;
+  --color-warm-700: #8a4828;
 
-  --color-blush-50: #fff8fb;
-  --color-blush-100: #fce7f3;
+  --color-brown-700: #5c3d2e;
+  --color-brown-800: #3d2b1f;
+  --color-brown-900: #2d1a0e;
 
   --font-sans: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', system-ui, sans-serif;
 }
@@ -29,6 +25,6 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: #fff8fb;
-  color: #2d1b3d;
+  background-color: #faf8f3;
+  color: #3d2b1f;
 }

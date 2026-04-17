@@ -13,7 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   });
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-pink-50/50 via-white to-purple-50/30">
+    <div className="flex min-h-screen bg-[#faf8f3]">
       <Sidebar user={user!} />
       <main className="flex-1 ml-56 p-6 max-w-5xl">{children}</main>
     </div>

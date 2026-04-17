@@ -126,11 +126,11 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Step 1: 年齢 */}
-      <div className="bg-white rounded-3xl border border-pink-100 p-5 shadow-sm">
-        <label className="block text-sm font-semibold text-gray-700 mb-3">
-          1. クラスの年齢 <span className="text-pink-400">*</span>
+      <div className="bg-white rounded-2xl border border-[#ece4d4] p-5">
+        <label className="block text-sm font-semibold text-[#3d2b1f] mb-3">
+          1. クラスの年齢 <span className="text-[#d4845a]">*</span>
         </label>
         <div className="flex flex-wrap gap-2">
           {Object.entries(AGE_LABELS).map(([val, label]) => (
@@ -138,12 +138,12 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
               key={val}
               type="button"
               onClick={() => setAge(Number(val))}
-              className={`px-4 py-2 rounded-2xl text-sm font-medium border transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors cursor-pointer ${
                 age === Number(val)
-                  ? "bg-gradient-to-r from-pink-400 to-purple-400 text-white border-transparent shadow-md shadow-pink-100"
-                  : "bg-white text-gray-500 border-pink-100 hover:border-pink-300 hover:text-pink-500"
+                  ? "bg-[#3d2b1f] text-[#f5f0e8] border-[#3d2b1f]"
+                  : "bg-white text-[#8a6a50] border-[#ddd0b8] hover:border-[#d4845a] hover:text-[#a85c38]"
               }`}
-              style={{ minHeight: "44px" }}
+              style={{ minHeight: "40px" }}
             >
               {label}
             </button>
@@ -152,21 +152,21 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
       </div>
 
       {/* Step 2: 週の様子 */}
-      <div className="bg-white rounded-3xl border border-pink-100 p-5 shadow-sm">
+      <div className="bg-white rounded-2xl border border-[#ece4d4] p-5">
         <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-semibold text-gray-700">
-            2. 今週の子どもの様子 <span className="text-pink-400">*</span>
+          <label className="text-sm font-semibold text-[#3d2b1f]">
+            2. 今週の子どもの様子 <span className="text-[#d4845a]">*</span>
           </label>
           <button
             type="button"
             onClick={toggleVoice}
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer ${
               listening
                 ? "bg-red-50 text-red-500 border-red-200 animate-pulse"
-                : "bg-pink-50 text-pink-500 border-pink-200 hover:bg-pink-100"
+                : "bg-[#faf8f3] text-[#8a6a50] border-[#ddd0b8] hover:border-[#d4845a]"
             }`}
           >
-            🎤 {listening ? "停止" : "音声入力"}
+            <MicIcon /> {listening ? "停止" : "音声入力"}
           </button>
         </div>
         <textarea
@@ -175,20 +175,19 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
           onChange={(e) => setMemo(e.target.value)}
           placeholder={`タロウ 砂場 ずっと掘ってた\nハナちゃん 泣いてた、理由不明\n製作 のり使うの嫌がる子多い\n体言止め・走り書きOK`}
           rows={8}
-          className="w-full border border-pink-100 rounded-2xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-pink-300 resize-y leading-relaxed bg-pink-50/20"
+          className="w-full border border-[#ece4d4] rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#d4845a] resize-y leading-relaxed bg-[#faf8f3] text-[#3d2b1f] placeholder-[#c4aa8a]"
         />
-        <p className="text-xs text-gray-400 mt-2">{memo.length}文字</p>
+        <p className="text-xs text-[#c4aa8a] mt-2">{memo.length}文字</p>
 
-        {/* フレーズチップ */}
         <div className="mt-3">
-          <p className="text-xs text-gray-400 mb-2">よく使うフレーズ：</p>
+          <p className="text-xs text-[#b09070] mb-2">よく使うフレーズ：</p>
           <div className="flex flex-wrap gap-1.5">
             {PHRASE_CHIPS.map((chip) => (
               <button
                 key={chip}
                 type="button"
                 onClick={() => addPhrase(chip)}
-                className="text-xs px-3 py-1.5 rounded-full bg-pink-50 text-pink-500 border border-pink-100 hover:bg-pink-100 transition-colors cursor-pointer"
+                className="text-xs px-3 py-1.5 rounded-full bg-[#faf8f3] text-[#8a6a50] border border-[#ddd0b8] hover:border-[#d4845a] hover:text-[#a85c38] transition-colors cursor-pointer"
               >
                 + {chip}
               </button>
@@ -198,30 +197,29 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
       </div>
 
       {/* Step 3: 来週に向けて */}
-      <div className="bg-white rounded-3xl border border-pink-100 p-5 shadow-sm">
-        <label className="block text-sm font-semibold text-gray-700 mb-3">
-          3. 気になること・来週やりたいこと <span className="text-gray-400 font-normal">（任意）</span>
+      <div className="bg-white rounded-2xl border border-[#ece4d4] p-5">
+        <label className="block text-sm font-semibold text-[#3d2b1f] mb-3">
+          3. 気になること・来週やりたいこと <span className="text-[#b09070] font-normal">（任意）</span>
         </label>
         <textarea
           value={nextMemo}
           onChange={(e) => setNextMemo(e.target.value)}
           placeholder="来週は水遊びを予定。A の言葉の発達が気になる。"
           rows={3}
-          className="w-full border border-pink-100 rounded-2xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-pink-300 resize-y bg-pink-50/20"
+          className="w-full border border-[#ece4d4] rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#d4845a] resize-y bg-[#faf8f3] text-[#3d2b1f] placeholder-[#c4aa8a]"
         />
       </div>
 
       {error && (
-        <p className="text-sm text-red-400 bg-red-50 px-4 py-3 rounded-2xl">{error}</p>
+        <p className="text-sm text-red-500 bg-red-50 px-4 py-3 rounded-xl">{error}</p>
       )}
 
-      {/* Generate button */}
       <button
         type="button"
         onClick={handleGenerate}
         disabled={generating}
-        className="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white rounded-2xl font-bold text-lg hover:from-pink-500 hover:to-purple-500 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-pink-100"
-        style={{ height: "60px" }}
+        className="w-full bg-[#3d2b1f] text-[#f5f0e8] rounded-xl font-bold text-base hover:bg-[#5c3d2e] transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+        style={{ height: "56px" }}
       >
         {generating ? (
           <>
@@ -229,12 +227,12 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
             AIが保育指針をもとに作成中...
           </>
         ) : (
-          "✨ 週案を作る"
+          "週案を生成する"
         )}
       </button>
       {generating && (
-        <p className="text-center text-xs text-pink-300 animate-pulse">
-          10〜30秒ほどお待ちください 🌸
+        <p className="text-center text-xs text-[#b09070] animate-pulse">
+          10〜30秒ほどお待ちください
         </p>
       )}
 
@@ -253,9 +251,19 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
 
 function Spinner() {
   return (
-    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+}
+
+function MicIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <rect x="3.5" y="0.5" width="5" height="7" rx="2.5" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M1.5 6C1.5 8.5 10.5 8.5 10.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+      <line x1="6" y1="9" x2="6" y2="11.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
     </svg>
   );
 }
