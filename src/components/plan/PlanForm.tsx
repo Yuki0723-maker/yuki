@@ -46,7 +46,6 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
   const [plan, setPlan] = useState<GeneratedPlanData | null>(null);
   const [error, setError] = useState("");
 
-  // 音声入力
   const [listening, setListening] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -129,9 +128,9 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
   return (
     <div className="space-y-5">
       {/* Step 1: 年齢 */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-        <label className="block text-sm font-semibold text-gray-800 mb-3">
-          1. クラスの年齢 <span className="text-red-400">*</span>
+      <div className="bg-white rounded-3xl border border-pink-100 p-5 shadow-sm">
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
+          1. クラスの年齢 <span className="text-pink-400">*</span>
         </label>
         <div className="flex flex-wrap gap-2">
           {Object.entries(AGE_LABELS).map(([val, label]) => (
@@ -139,12 +138,12 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
               key={val}
               type="button"
               onClick={() => setAge(Number(val))}
-              className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors cursor-pointer ${
+              className={`px-4 py-2 rounded-2xl text-sm font-medium border transition-all cursor-pointer ${
                 age === Number(val)
-                  ? "bg-green-600 text-white border-green-600"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-green-300"
+                  ? "bg-gradient-to-r from-pink-400 to-purple-400 text-white border-transparent shadow-md shadow-pink-100"
+                  : "bg-white text-gray-500 border-pink-100 hover:border-pink-300 hover:text-pink-500"
               }`}
-              style={{ minHeight: "48px" }}
+              style={{ minHeight: "44px" }}
             >
               {label}
             </button>
@@ -153,18 +152,18 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
       </div>
 
       {/* Step 2: 週の様子 */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+      <div className="bg-white rounded-3xl border border-pink-100 p-5 shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-semibold text-gray-800">
-            2. 今週の子どもの様子 <span className="text-red-400">*</span>
+          <label className="text-sm font-semibold text-gray-700">
+            2. 今週の子どもの様子 <span className="text-pink-400">*</span>
           </label>
           <button
             type="button"
             onClick={toggleVoice}
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors cursor-pointer ${
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
               listening
-                ? "bg-red-50 text-red-600 border-red-200 animate-pulse"
-                : "bg-gray-50 text-gray-600 border-gray-200 hover:border-green-300"
+                ? "bg-red-50 text-red-500 border-red-200 animate-pulse"
+                : "bg-pink-50 text-pink-500 border-pink-200 hover:bg-pink-100"
             }`}
           >
             🎤 {listening ? "停止" : "音声入力"}
@@ -176,20 +175,20 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
           onChange={(e) => setMemo(e.target.value)}
           placeholder={`タロウ 砂場 ずっと掘ってた\nハナちゃん 泣いてた、理由不明\n製作 のり使うの嫌がる子多い\n体言止め・走り書きOK`}
           rows={8}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-green-400 resize-y leading-relaxed"
+          className="w-full border border-pink-100 rounded-2xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-pink-300 resize-y leading-relaxed bg-pink-50/20"
         />
         <p className="text-xs text-gray-400 mt-2">{memo.length}文字</p>
 
         {/* フレーズチップ */}
         <div className="mt-3">
-          <p className="text-xs text-gray-500 mb-2">よく使うフレーズ：</p>
+          <p className="text-xs text-gray-400 mb-2">よく使うフレーズ：</p>
           <div className="flex flex-wrap gap-1.5">
             {PHRASE_CHIPS.map((chip) => (
               <button
                 key={chip}
                 type="button"
                 onClick={() => addPhrase(chip)}
-                className="text-xs px-3 py-1.5 rounded-full bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors cursor-pointer"
+                className="text-xs px-3 py-1.5 rounded-full bg-pink-50 text-pink-500 border border-pink-100 hover:bg-pink-100 transition-colors cursor-pointer"
               >
                 + {chip}
               </button>
@@ -199,8 +198,8 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
       </div>
 
       {/* Step 3: 来週に向けて */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-        <label className="block text-sm font-semibold text-gray-800 mb-3">
+      <div className="bg-white rounded-3xl border border-pink-100 p-5 shadow-sm">
+        <label className="block text-sm font-semibold text-gray-700 mb-3">
           3. 気になること・来週やりたいこと <span className="text-gray-400 font-normal">（任意）</span>
         </label>
         <textarea
@@ -208,12 +207,12 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
           onChange={(e) => setNextMemo(e.target.value)}
           placeholder="来週は水遊びを予定。A の言葉の発達が気になる。"
           rows={3}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-green-400 resize-y"
+          className="w-full border border-pink-100 rounded-2xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-pink-300 resize-y bg-pink-50/20"
         />
       </div>
 
       {error && (
-        <p className="text-sm text-red-500 bg-red-50 px-4 py-3 rounded-xl">{error}</p>
+        <p className="text-sm text-red-400 bg-red-50 px-4 py-3 rounded-2xl">{error}</p>
       )}
 
       {/* Generate button */}
@@ -221,7 +220,7 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
         type="button"
         onClick={handleGenerate}
         disabled={generating}
-        className="w-full bg-green-600 text-white rounded-2xl font-bold text-lg hover:bg-green-700 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+        className="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white rounded-2xl font-bold text-lg hover:from-pink-500 hover:to-purple-500 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-pink-100"
         style={{ height: "60px" }}
       >
         {generating ? (
@@ -230,12 +229,12 @@ export function PlanForm({ templates, initialMemo = "" }: Props) {
             AIが保育指針をもとに作成中...
           </>
         ) : (
-          "週案を作る →"
+          "✨ 週案を作る"
         )}
       </button>
       {generating && (
-        <p className="text-center text-xs text-gray-400 animate-pulse">
-          10〜30秒ほどお待ちください
+        <p className="text-center text-xs text-pink-300 animate-pulse">
+          10〜30秒ほどお待ちください 🌸
         </p>
       )}
 
