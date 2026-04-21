@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { redirect } from "next/navigation";
 import { formatWeekRange, AGE_LABELS } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "ホーム" };
@@ -22,8 +23,13 @@ export default async function PlansPage() {
         createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0) - 6 * 86400000) },
       },
     }),
-    db.user.findUnique({ where: { id: userId }, select: { name: true } }),
+    db.user.findUnique({ where: { id: userId }, select: { name: true, targetAge: true } }),
   ]);
+
+  // クラス情報未登録なら初回設定へ
+  if (user?.targetAge === null || user?.targetAge === undefined) {
+    redirect("/onboarding");
+  }
 
   return (
     <div className="space-y-6">

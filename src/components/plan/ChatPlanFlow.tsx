@@ -36,27 +36,27 @@ interface Props {
   classProfile?: ClassProfile;
 }
 
-const STEPS = [
-  { label: "クラス確認" },
-  { label: "今週の様子" },
-  { label: "子どもの観察" },
-  { label: "環境・援助" },
-  { label: "来週のねらい" },
-];
+// 年齢からフォーマットを自動判定
+function detectFormat(classAge: number | null | undefined): string {
+  if (classAge !== null && classAge !== undefined && classAge <= 2) return "young";
+  return "standard";
+}
 
-const FORMAT_OPTIONS = [
-  { value: "standard", label: "保育所（3〜5歳）", desc: "5領域・集団活動中心の週案" },
-  { value: "young", label: "0〜2歳児クラス", desc: "養護＋教育・個別記録重視の週案" },
-  { value: "yochien", label: "認定こども園", desc: "教育・保育要領準拠の週案" },
-];
+// AIの最後のメッセージが週案生成を提案しているか検出
+function isGenerateSuggested(messages: Message[]): boolean {
+  const lastAI = [...messages].reverse().find(m => m.role === "assistant");
+  if (!lastAI) return false;
+  return lastAI.content.includes("週案を作成しましょうか") ||
+    lastAI.content.includes("週案を作成しますか") ||
+    lastAI.content.includes("週案づくりに入りましょう") ||
+    lastAI.content.includes("週案を作りましょう");
+}
 
 export function ChatPlanFlow({ templates, classProfile }: Props) {
-  const [formatType, setFormatType] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [streamingText, setStreamingText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [input, setInput] = useState("");
-  const [canGenerate, setCanGenerate] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [plan, setPlan] = useState<GeneratedPlanData | null>(null);
   const [error, setError] = useState("");
@@ -64,15 +64,12 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const userMessageCount = messages.filter(m => m.role === "user").length;
-  const currentStep = Math.min(userMessageCount + 1, STEPS.length);
+  // 6回以上やり取りするか、AIが提案したらボタン表示
+  const canGenerate = userMessageCount >= 6 || isGenerateSuggested(messages);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, streamingText]);
-
-  useEffect(() => {
-    if (userMessageCount >= 5) setCanGenerate(true);
-  }, [userMessageCount]);
 
   const streamMessage = useCallback(async (currentMessages: Message[]) => {
     setIsStreaming(true);
@@ -83,10 +80,7 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
       const res = await fetch("/api/plan/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: currentMessages,
-          classProfile: classProfile ?? null,
-        }),
+        body: JSON.stringify({ messages: currentMessages, classProfile: classProfile ?? null }),
       });
 
       if (!res.ok || !res.body) throw new Error("応答の取得に失敗しました");
@@ -99,11 +93,9 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         buffer += decoder.decode(value, { stream: true });
         const lines = buffer.split("\n\n");
         buffer = lines.pop() ?? "";
-
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
           const data = line.slice(6).trim();
@@ -112,7 +104,7 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
             const { text } = JSON.parse(data) as { text: string };
             fullText += text;
             setStreamingText(fullText);
-          } catch { /* ignore parse errors */ }
+          } catch { /* ignore */ }
         }
       }
 
@@ -126,13 +118,11 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
     }
   }, [classProfile]);
 
-  // フォーマット選択後に最初の挨拶を取得
+  // 初回の挨拶を取得
   useEffect(() => {
-    if (formatType !== null) {
-      streamMessage([]);
-    }
+    streamMessage([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formatType]);
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isStreaming) return;
@@ -154,6 +144,7 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
     setIsGenerating(true);
     setError("");
     try {
+      const formatType = detectFormat(classProfile?.classAge);
       const res = await fetch("/api/plan/generate-from-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -164,79 +155,27 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
       setPlan(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "エラーが発生しました");
-    } finally {
       setIsGenerating(false);
     }
   };
 
-  // 週案生成結果の表示
   if (plan) {
     return <PlanResult plan={plan} templates={templates} onBack={() => setPlan(null)} />;
   }
 
-  // フォーマット選択画面
-  if (formatType === null) {
-    return (
-      <div className="max-w-2xl space-y-6">
-        <div>
-          <h2 className="text-lg font-bold text-[#3d2b1f] mb-1">週案のフォーマットを選んでください</h2>
-          <p className="text-sm text-[#b09070]">クラスの年齢に合ったフォーマットで週案を作成します</p>
-        </div>
-        <div className="space-y-3">
-          {FORMAT_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => setFormatType(opt.value)}
-              className="w-full bg-white border border-[#ece4d4] rounded-2xl p-5 text-left hover:border-[#d4845a] hover:shadow-sm transition-all cursor-pointer group"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-[#3d2b1f] group-hover:text-[#a85c38] transition-colors">
-                    {opt.label}
-                  </p>
-                  <p className="text-xs text-[#b09070] mt-0.5">{opt.desc}</p>
-                </div>
-                <span className="text-[#ddd0b8] text-xl group-hover:text-[#d4845a] transition-colors">›</span>
-              </div>
-            </button>
-          ))}
-        </div>
-        {classProfile?.classAge !== null && classProfile?.classAge !== undefined && (
-          <p className="text-xs text-[#b09070] text-center">
-            登録クラス: {classProfile.classAge}歳児
-            {classProfile.classSize ? `・${classProfile.classSize}名` : ""}
-          </p>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-2xl flex flex-col" style={{ height: "calc(100vh - 7rem)" }}>
-      {/* ステップインジケーター */}
-      <div className="bg-white border border-[#ece4d4] rounded-2xl p-3 mb-4 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          {STEPS.map((step, i) => (
-            <div key={i} className="flex items-center gap-1.5">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
-                i + 1 < currentStep ? "bg-[#3d2b1f] text-white" :
-                i + 1 === currentStep ? "bg-[#d4845a] text-white" :
-                "bg-[#f0e8df] text-[#b09070]"
-              }`}>
-                {i + 1 < currentStep ? "✓" : i + 1}
-              </div>
-              <span className={`text-xs hidden md:block ${
-                i + 1 === currentStep ? "text-[#3d2b1f] font-medium" : "text-[#c4aa8a]"
-              }`}>
-                {step.label}
-              </span>
-              {i < STEPS.length - 1 && (
-                <div className={`w-3 h-px mx-0.5 flex-shrink-0 ${i + 1 < currentStep ? "bg-[#3d2b1f]" : "bg-[#ddd0b8]"}`} />
-              )}
-            </div>
-          ))}
+
+      {/* クラス情報バッジ */}
+      {classProfile?.classAge !== null && classProfile?.classAge !== undefined && (
+        <div className="flex items-center gap-2 mb-3 flex-shrink-0">
+          <span className="bg-[#f0e8df] text-[#a85c38] text-xs font-semibold px-3 py-1 rounded-full">
+            {classProfile.classAge}歳児クラス
+            {classProfile.classSize ? ` · ${classProfile.classSize}名` : ""}
+          </span>
+          <span className="text-xs text-[#b09070]">登録済みの情報を使用しています</span>
         </div>
-      </div>
+      )}
 
       {/* チャット画面 */}
       <div className="flex-1 overflow-y-auto space-y-4 pr-1 pb-2">
@@ -265,11 +204,11 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
         </div>
       )}
 
-      {/* 週案生成ボタン */}
+      {/* 週案生成ボタン（会話が十分になったら表示） */}
       {canGenerate && !isGenerating && (
         <button
           onClick={handleGenerate}
-          className="flex-shrink-0 w-full bg-[#3d2b1f] text-[#f5f0e8] rounded-xl font-bold text-sm py-3.5 hover:bg-[#5c3d2e] transition-colors mb-2"
+          className="flex-shrink-0 w-full bg-[#3d2b1f] text-[#f5f0e8] rounded-xl font-bold text-sm py-3.5 hover:bg-[#5c3d2e] transition-colors mb-2 cursor-pointer"
         >
           週案を生成する →
         </button>
@@ -283,7 +222,7 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={canGenerate ? "追加情報があれば入力できます（任意）" : "返答を入力... （Enterで送信）"}
+            placeholder="話しかけてみてください... （Enterで送信）"
             rows={2}
             disabled={isStreaming}
             className="flex-1 resize-none border-none outline-none text-sm text-[#3d2b1f] placeholder-[#c4aa8a] bg-transparent leading-relaxed"
@@ -301,7 +240,6 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
   );
 }
 
-// チャットバブル
 function ChatBubble({ role, content, isStreaming }: { role: "user" | "assistant"; content: string; isStreaming?: boolean }) {
   return (
     <div className={`flex ${role === "user" ? "justify-end" : "justify-start"} gap-2`}>
@@ -321,9 +259,7 @@ function ChatBubble({ role, content, isStreaming }: { role: "user" | "assistant"
               className="whitespace-pre-wrap"
               dangerouslySetInnerHTML={{
                 __html: content
-                  .replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")
+                  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
                   .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
               }}
             />
