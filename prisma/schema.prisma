@@ -14,9 +14,12 @@ model User {
   email      String   @unique
   name       String?
   avatarUrl  String?
-  targetAge  Int?     // 担当クラスの年齢（0〜5）
-  bio        String?
-  createdAt  DateTime @default(now())
+  targetAge     Int?     // 担当クラスの年齢（0〜5）
+  bio           String?
+  classSize     Int?     // クラスの子どもの人数
+  teachingStyle String?  // 保育スタイル・大切にしていること
+  childrenNote  String?  @db.Text // 子どもたちの傾向・気になっていること
+  createdAt     DateTime @default(now())
 
   memos       DailyMemo[]
   plans       WeeklyPlan[]

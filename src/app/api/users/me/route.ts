@@ -10,6 +10,9 @@ export async function PATCH(req: Request) {
     name?: string;
     targetAge?: number | null;
     bio?: string | null;
+    classSize?: number | null;
+    teachingStyle?: string | null;
+    childrenNote?: string | null;
   };
 
   await db.user.update({
@@ -18,6 +21,9 @@ export async function PATCH(req: Request) {
       name: body.name,
       targetAge: body.targetAge,
       bio: body.bio,
+      classSize: body.classSize,
+      teachingStyle: body.teachingStyle,
+      childrenNote: body.childrenNote,
     },
   });
 

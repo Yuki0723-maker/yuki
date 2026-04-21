@@ -11,7 +11,7 @@ export default async function ProfilePage() {
   const [user, lineLinked, planCount, followCounts] = await Promise.all([
     db.user.findUnique({
       where: { id: session!.user.id },
-      select: { id: true, name: true, email: true, avatarUrl: true, targetAge: true, bio: true },
+      select: { id: true, name: true, email: true, avatarUrl: true, targetAge: true, bio: true, classSize: true, teachingStyle: true, childrenNote: true },
     }),
     db.lineUser.findUnique({ where: { userId: session!.user.id } }),
     db.weeklyPlan.count({ where: { userId: session!.user.id } }),
