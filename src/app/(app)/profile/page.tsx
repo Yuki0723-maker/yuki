@@ -19,7 +19,7 @@ export default async function ProfilePage() {
   ]);
 
   return (
-    <div className="max-w-lg space-y-8">
+    <div className="max-w-lg space-y-8 p-6">
       <h1 className="text-2xl font-bold text-gray-900">マイページ</h1>
 
       {/* Stats */}

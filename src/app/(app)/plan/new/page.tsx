@@ -21,7 +21,7 @@ export default async function PlanNewPage() {
   ]);
 
   return (
-    <div>
+    <div className="p-6">
       <div className="mb-5">
         <h1 className="text-xl font-bold text-[#3d2b1f]">週案を作る</h1>
         <p className="text-sm text-[#b09070] mt-1">

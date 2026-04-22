@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "投稿する" };
 
 export default function CommunityNewPage() {
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">投稿する</h1>
         <p className="text-sm text-gray-500 mt-1">

@@ -33,7 +33,7 @@ export default async function PostDetailPage({
   };
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6 p-6">
       <Link href="/community" className="text-sm text-green-600 hover:underline">
         ← コミュニティに戻る
       </Link>

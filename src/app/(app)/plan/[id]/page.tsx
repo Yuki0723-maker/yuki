@@ -25,5 +25,5 @@ export default async function PlanDetailPage({
     select: { id: true, name: true },
   });
 
-  return <PlanDetail plan={plan} templates={templates} />;
+  return <div className="p-6"><PlanDetail plan={plan} templates={templates} /></div>;
 }
