@@ -76,6 +76,7 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const initializedRef = useRef(false);
 
   const userMessageCount = messages.filter(m => m.role === "user").length;
   const canGenerate = userMessageCount >= 6 || isGenerateSuggested(messages);
@@ -206,6 +207,8 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
   }, [classProfile, speak]);
 
   useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
     streamMessage([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -370,11 +373,7 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
 function ChatBubble({ role, content, isStreaming }: { role: "user" | "assistant"; content: string; isStreaming?: boolean }) {
   return (
     <div className={`flex ${role === "user" ? "justify-end" : "justify-start"} gap-2`}>
-      {role === "assistant" && (
-        <div className="w-7 h-7 rounded-full bg-[#3d2b1f] flex items-center justify-center flex-shrink-0 mt-1">
-          <CupIconSm />
-        </div>
-      )}
+      {role === "assistant" && <TeacherAvatar />}
       <div className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
         role === "user"
           ? "bg-[#3d2b1f] text-[#f5f0e8] rounded-tr-sm"
@@ -441,11 +440,33 @@ function Spinner() {
   );
 }
 
-function CupIconSm() {
+function TeacherAvatar() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M2 5.5 Q2 11 7 11 Q12 11 12 5.5 Z" stroke="#f5f0e8" strokeWidth="1.2" fill="none" />
-      <rect x="1.5" y="3.5" width="11" height="3" rx="1.5" stroke="#f5f0e8" strokeWidth="1.2" fill="none" />
-    </svg>
+    <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-0.5 border border-[#e8d5c0]">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        {/* 背景 */}
+        <rect width="32" height="32" fill="#fde8d0"/>
+        {/* 髪 */}
+        <path d="M6 17 Q6 6 16 6 Q26 6 26 17" fill="#6b3a20"/>
+        <rect x="6" y="15" width="3" height="9" rx="1.5" fill="#6b3a20"/>
+        <rect x="23" y="15" width="3" height="9" rx="1.5" fill="#6b3a20"/>
+        {/* 顔 */}
+        <circle cx="16" cy="18" r="8.5" fill="#f5c89a"/>
+        {/* 目 */}
+        <circle cx="12.5" cy="17" r="1.3" fill="#3d2b1f"/>
+        <circle cx="19.5" cy="17" r="1.3" fill="#3d2b1f"/>
+        {/* 目のハイライト */}
+        <circle cx="13" cy="16.5" r="0.4" fill="white"/>
+        <circle cx="20" cy="16.5" r="0.4" fill="white"/>
+        {/* 笑顔 */}
+        <path d="M12.5 21 Q16 24 19.5 21" stroke="#c0622f" strokeWidth="1.2" strokeLinecap="round" fill="none"/>
+        {/* ほっぺ */}
+        <circle cx="10.5" cy="20.5" r="2.2" fill="#f0a0a0" opacity="0.35"/>
+        <circle cx="21.5" cy="20.5" r="2.2" fill="#f0a0a0" opacity="0.35"/>
+        {/* 服・えり */}
+        <path d="M7 31 Q7 27 16 27 Q25 27 25 31" fill="#d4845a"/>
+        <path d="M14 27 L16 30 L18 27" fill="#c0622f"/>
+      </svg>
+    </div>
   );
 }
