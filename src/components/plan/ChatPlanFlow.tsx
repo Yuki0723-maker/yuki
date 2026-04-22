@@ -225,7 +225,8 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
+    if (e.key === "Enter" && e.shiftKey) { e.preventDefault(); handleSend(); }
+    // 普通のEnterは改行（デフォルト動作）
   };
 
   const handleGenerate = async () => {
@@ -325,7 +326,7 @@ export function ChatPlanFlow({ templates, classProfile }: Props) {
               value={input + (interimText ? interimText : "")}
               onChange={e => { if (!isListening) setInput(e.target.value); }}
               onKeyDown={handleKeyDown}
-              placeholder={isListening ? "聞いています..." : "話しかけてみてください... （Enterで送信）"}
+              placeholder={isListening ? "聞いています..." : "話しかけてみてください... （Shift+Enterで送信）"}
               rows={2}
               disabled={isStreaming}
               className="resize-none border-none outline-none text-sm text-[#3d2b1f] placeholder-[#c4aa8a] bg-transparent leading-relaxed"

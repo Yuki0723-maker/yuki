@@ -1,28 +1,24 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 
-const isMock = !process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === "dummy";
+const hasOpenAI = !!(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== "dummy");
+const hasAnthropic = !!(process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY !== "dummy");
+const isMock = !hasOpenAI && !hasAnthropic;
 
-// ユーザーの言葉を拾って自然な深掘り応答を生成
+// モック：ユーザーの言葉を拾って自然な深掘り応答を生成
 function buildMockResponse(userMessageCount: number, lastUserMsg: string): string {
   const s = lastUserMsg.trim();
   const short = s.length > 20 ? s.slice(0, 20) + "…" : s;
 
   const responses = [
-    // 0: 最初の挨拶
     "今週のクラス、どんな感じでしたか？",
-    // 1: 1回目の返答を受けて
     `「${short}」なんですね。\n\nその中で、特に印象に残った場面はありましたか？子どもたちがどんなふうに動いていたか、もう少し聞かせてもらえますか？`,
-    // 2: 場面を深掘り
     `そうだったんですね。先生はその時、どんなふうに関わりましたか？`,
-    // 3: 関わり方から子どもの意味へ
     `ていねいに見ていらっしゃいますね。\n\n「${short}」という場面で、その子（たち）にとってどんな意味があったと思いますか？先生はどんなことを感じましたか？`,
-    // 4: クラス全体へ
     `なるほど。クラス全体を見たとき、今週はどんな雰囲気や流れがありましたか？気になっていることがあれば教えてください。`,
-    // 5: 来週へ
     `「${short}」を踏まえて、来週に向けて何か意識したいことや試してみたいことはありますか？`,
-    // 6: まとめ・週案提案
     `今週の様子がとてもよく伝わりました。丁寧に子どもたちを見ていらっしゃいますね。\n\n週案を作成しましょうか？`,
   ];
 
@@ -79,6 +75,31 @@ const CHAT_SYSTEM_PROMPT = `あなたは保育園の経験豊富な主任保育�
 
 const encoder = new TextEncoder();
 
+function buildSystemPromptWithProfile(classProfile?: {
+  classAge?: number | null;
+  classSize?: number | null;
+  teachingStyle?: string | null;
+  childrenNote?: string | null;
+}): string {
+  let prompt = CHAT_SYSTEM_PROMPT;
+  if (!classProfile) return prompt;
+
+  const lines: string[] = [];
+  if (classProfile.classAge !== null && classProfile.classAge !== undefined)
+    lines.push(`- 担当クラス: ${classProfile.classAge}歳児`);
+  if (classProfile.classSize)
+    lines.push(`- 子どもの人数: ${classProfile.classSize}名`);
+  if (classProfile.teachingStyle)
+    lines.push(`- 保育スタイル: ${classProfile.teachingStyle}`);
+  if (classProfile.childrenNote)
+    lines.push(`- 子どもたちの傾向: ${classProfile.childrenNote}`);
+
+  if (lines.length > 0) {
+    prompt += `\n\n【この保育士のクラス情報（事前登録済み）】\n${lines.join("\n")}\n\nこの情報は把握済みなので、クラスの年齢や人数を改めて聞かないこと。`;
+  }
+  return prompt;
+}
+
 export async function POST(req: Request) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -91,6 +112,7 @@ export async function POST(req: Request) {
   const userMessageCount = messages.filter(m => m.role === "user").length;
   const lastUserMsg = [...messages].reverse().find(m => m.role === "user")?.content ?? "";
 
+  // モック
   if (isMock) {
     const responseText = buildMockResponse(userMessageCount, lastUserMsg);
     const stream = new ReadableStream({
@@ -108,26 +130,44 @@ export async function POST(req: Request) {
     });
   }
 
-  // クラス情報をシステムプロンプトに追加
-  let systemPrompt = CHAT_SYSTEM_PROMPT;
-  if (classProfile) {
-    const lines: string[] = [];
-    if (classProfile.classAge !== null && classProfile.classAge !== undefined)
-      lines.push(`- 担当クラス: ${classProfile.classAge}歳児`);
-    if (classProfile.classSize)
-      lines.push(`- 子どもの人数: ${classProfile.classSize}名`);
-    if (classProfile.teachingStyle)
-      lines.push(`- 保育スタイル: ${classProfile.teachingStyle}`);
-    if (classProfile.childrenNote)
-      lines.push(`- 子どもたちの傾向: ${classProfile.childrenNote}`);
+  const systemPrompt = buildSystemPromptWithProfile(classProfile);
+  const chatMessages = messages as { role: "user" | "assistant"; content: string }[];
 
-    if (lines.length > 0) {
-      systemPrompt += `\n\n【この保育士のクラス情報（事前登録済み）】\n${lines.join("\n")}\n\nこの情報は把握済みなので、クラスの年齢や人数を改めて聞かないこと。`;
-    }
+  // OpenAI (ChatGPT) を使用
+  if (hasOpenAI) {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            max_tokens: 400,
+            messages: [
+              { role: "system", content: systemPrompt },
+              ...chatMessages,
+            ],
+            stream: true,
+          });
+          for await (const chunk of response) {
+            const text = chunk.choices[0]?.delta?.content ?? "";
+            if (text) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+            }
+          }
+        } catch {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: "エラーが発生しました。" })}\n\n`));
+        }
+        controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+        controller.close();
+      },
+    });
+    return new Response(stream, {
+      headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "Connection": "keep-alive" },
+    });
   }
 
+  // Anthropic (Claude) を使用
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
   const stream = new ReadableStream({
     async start(controller) {
       try {
@@ -135,7 +175,7 @@ export async function POST(req: Request) {
           model: "claude-sonnet-4-6",
           max_tokens: 400,
           system: systemPrompt,
-          messages: messages as { role: "user" | "assistant"; content: string }[],
+          messages: chatMessages,
         });
         for await (const event of claudeStream) {
           if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
