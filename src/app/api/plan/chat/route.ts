@@ -4,10 +4,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 
-const hasGemini   = !!(process.env.GEMINI_API_KEY   && process.env.GEMINI_API_KEY   !== "dummy");
-const hasOpenAI   = !!(process.env.OPENAI_API_KEY   && process.env.OPENAI_API_KEY   !== "dummy");
+const hasGroq      = !!(process.env.GROQ_API_KEY      && process.env.GROQ_API_KEY      !== "dummy");
+const hasGemini    = !!(process.env.GEMINI_API_KEY    && process.env.GEMINI_API_KEY    !== "dummy");
+const hasOpenAI    = !!(process.env.OPENAI_API_KEY    && process.env.OPENAI_API_KEY    !== "dummy");
 const hasAnthropic = !!(process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY !== "dummy");
-const isMock = !hasGemini && !hasOpenAI && !hasAnthropic;
+const isMock = !hasGroq && !hasGemini && !hasOpenAI && !hasAnthropic;
 
 // モック：ユーザーの言葉を拾った応答
 function buildMockResponse(userMessageCount: number, lastUserMsg: string): string {
@@ -120,6 +121,36 @@ export async function POST(req: Request) {
         for (const char of text) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: char })}\n\n`));
           await new Promise(r => setTimeout(r, 18));
+        }
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      },
+    });
+    return new Response(stream, { headers: sseHeaders });
+  }
+
+  // ── Groq (Llama) ────────────────────────────────────
+  if (hasGroq) {
+    const groq = new OpenAI({
+      apiKey: process.env.GROQ_API_KEY,
+      baseURL: "https://api.groq.com/openai/v1",
+    });
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const response = await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+            max_tokens: 400,
+            messages: [{ role: "system", content: systemPrompt }, ...chatMessages],
+            stream: true,
+          });
+          for await (const chunk of response) {
+            const text = chunk.choices[0]?.delta?.content ?? "";
+            if (text) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+          }
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "エラーが発生しました";
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: msg })}\n\n`));
         }
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
         controller.close();
