@@ -21,15 +21,16 @@ model User {
   childrenNote  String?  @db.Text // 子どもたちの傾向・気になっていること
   createdAt     DateTime @default(now())
 
-  memos       DailyMemo[]
-  plans       WeeklyPlan[]
-  lineUser    LineUser?
-  templates   PlanTemplate[]
-  posts       CommunityPost[]
-  likes       PostLike[]
-  savedPosts  SavedPost[]
-  following   Follow[]        @relation("Following")
-  followers   Follow[]        @relation("Followers")
+  memos         DailyMemo[]
+  plans         WeeklyPlan[]
+  lineUser      LineUser?
+  templates     PlanTemplate[]
+  posts         CommunityPost[]
+  likes         PostLike[]
+  savedPosts    SavedPost[]
+  following     Follow[]        @relation("Following")
+  followers     Follow[]        @relation("Followers")
+  annualEvents  AnnualEvent[]
 
   // NextAuth
   accounts Account[]
@@ -61,12 +62,39 @@ model WeeklyPlan {
   guidelineRef  String
   templateId    String?
   isPublic      Boolean  @default(false)
+  weekTheme     String?
+  reflection    String?  @db.Text
   createdAt     DateTime @default(now())
 
-  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  template PlanTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template      PlanTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  relatedEvents AnnualEvent[]
 
   @@index([userId, weekStartDate])
+}
+
+model AnnualEvent {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  date        DateTime
+  eventType   EventType
+  targetAge   Int?
+  note        String?   @db.Text
+  createdAt   DateTime  @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeklyPlans WeeklyPlan[]
+
+  @@index([userId, date])
+}
+
+enum EventType {
+  CEREMONY
+  SEASONAL
+  OUTING
+  DAILY
+  OTHER
 }
 
 model PlanTemplate {
