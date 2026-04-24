@@ -33,17 +33,22 @@ export function LoginForm() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-lg font-bold text-[#3d2b1f]">おかえりなさい</h2>
-        <p className="text-xs text-[#b09070] mt-1 bg-[#faf8f3] border border-[#ece4d4] rounded-lg px-3 py-2">
+        <h2 className="font-serif-jp text-lg font-bold" style={{ color: "#4A4A4A", letterSpacing: "0.04em" }}>
+          おかえりなさい
+        </h2>
+        <p
+          className="text-xs mt-2 rounded-2xl px-3 py-2"
+          style={{ color: "#9A8878", background: "rgba(209,232,226,0.3)", border: "1px solid rgba(178,226,242,0.4)" }}
+        >
           開発モード：任意のメールアドレスでログインできます
         </p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-4">
+      <form onSubmit={handleLogin} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-[#5c3d2e] mb-1">
+          <label className="block text-xs font-medium mb-1" style={{ color: "#9A8878", letterSpacing: "0.06em" }}>
             メールアドレス
           </label>
           <input
@@ -51,30 +56,37 @@ export function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border border-[#ddd0b8] rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#d4845a] bg-[#faf8f3] text-[#3d2b1f]"
+            className="input-kotonoha w-full text-sm"
+            style={{ color: "#4A4A4A" }}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#5c3d2e] mb-1">
+          <label className="block text-xs font-medium mb-1" style={{ color: "#9A8878", letterSpacing: "0.06em" }}>
             お名前
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-[#ddd0b8] rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#d4845a] bg-[#faf8f3] text-[#3d2b1f]"
+            className="input-kotonoha w-full text-sm"
+            style={{ color: "#4A4A4A" }}
           />
         </div>
 
         {error && (
-          <p className="text-sm text-red-500">{error}</p>
+          <p className="text-sm" style={{ color: "#E07070" }}>{error}</p>
         )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#3d2b1f] text-[#f5f0e8] rounded-xl py-3.5 text-base font-bold hover:bg-[#5c3d2e] transition-colors disabled:opacity-50 cursor-pointer"
-          style={{ minHeight: "52px" }}
+          className="w-full text-sm font-medium rounded-2xl py-3.5 transition-all disabled:opacity-50 cursor-pointer"
+          style={{
+            background: "linear-gradient(135deg, #FFB7B2 0%, #ffcac6 100%)",
+            color: "#4A4A4A",
+            boxShadow: "0 4px 16px rgba(255,183,178,0.4)",
+            minHeight: "52px",
+          }}
         >
           {loading ? "ログイン中..." : "ログインする"}
         </button>

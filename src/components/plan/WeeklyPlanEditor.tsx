@@ -151,28 +151,49 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
   const contentFields = activeFields.filter(f => !HEADER_FIELDS.includes(f));
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden" style={{ background: "#FDF5E6" }}>
       {/* ── Left: Plan preview ── */}
-      <div className="w-[40%] flex flex-col border-r border-[#ece4d4] bg-white overflow-hidden">
-        <div className="px-5 py-4 border-b border-[#f0e8d8] flex-shrink-0">
-          <h2 className="text-sm font-bold text-[#3d2b1f]">週案プレビュー</h2>
-          <p className="text-xs text-[#b09070] mt-0.5">「採用する」を押すと自動で反映・保存されます</p>
+      <div
+        className="w-[40%] flex flex-col overflow-hidden"
+        style={{
+          background: "rgba(255,255,255,0.72)",
+          backdropFilter: "blur(12px)",
+          borderRight: "1px solid rgba(255,183,178,0.18)",
+        }}
+      >
+        <div
+          className="px-6 py-4 flex-shrink-0"
+          style={{ borderBottom: "1px solid rgba(255,183,178,0.15)" }}
+        >
+          <h2
+            className="font-serif-jp text-sm font-bold"
+            style={{ color: "#4A4A4A", letterSpacing: "0.06em" }}
+          >
+            週案プレビュー
+          </h2>
+          <p className="text-xs mt-0.5" style={{ color: "#B4A494" }}>
+            「採用する」を押すと自動で反映・保存されます
+          </p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Header fields */}
           {headerFields.length > 0 && (
-            <div className="bg-[#faf8f3] rounded-xl p-4 space-y-3">
+            <div
+              className="rounded-2xl p-4 space-y-3"
+              style={{ background: "rgba(209,232,226,0.15)", border: "1px solid rgba(209,232,226,0.4)" }}
+            >
               {headerFields.map(slug => (
                 <div key={slug}>
-                  <label className="block text-xs font-semibold text-[#8a6a50] mb-1">
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#9A8878", letterSpacing: "0.05em" }}>
                     {FIELD_DEFINITIONS[slug].label}
                   </label>
                   <input
                     type="text"
                     value={fields[slug] ?? ""}
                     onChange={e => handleFieldChange(slug, e.target.value)}
-                    className="w-full text-sm border border-[#ddd0b8] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#d4845a] text-[#3d2b1f]"
+                    className="input-kotonoha w-full text-sm"
+                    style={{ color: "#4A4A4A" }}
                     placeholder={FIELD_DEFINITIONS[slug].description}
                   />
                 </div>
@@ -183,16 +204,38 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
           {/* Content fields */}
           {contentFields.map(slug => (
             <div key={slug}>
-              <label className="block text-sm font-semibold text-[#3d2b1f] mb-1">
+              <label className="block text-sm font-medium mb-0.5" style={{ color: "#4A4A4A" }}>
                 {FIELD_DEFINITIONS[slug].label}
               </label>
-              <p className="text-xs text-[#b09070] mb-1.5">{FIELD_DEFINITIONS[slug].description}</p>
+              <p className="text-xs mb-2" style={{ color: "#B4A494" }}>
+                {FIELD_DEFINITIONS[slug].description}
+              </p>
               <textarea
                 value={fields[slug] ?? ""}
                 onChange={e => handleFieldChange(slug, e.target.value)}
                 rows={4}
-                className="w-full text-sm border border-[#ddd0b8] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#d4845a] resize-none text-[#3d2b1f] placeholder-[#c4aa8a]"
+                style={{
+                  width: "100%",
+                  fontSize: "0.875rem",
+                  border: "none",
+                  borderBottom: "1.5px solid #D4C4B0",
+                  background: "transparent",
+                  outline: "none",
+                  resize: "none",
+                  color: "#4A4A4A",
+                  padding: "8px 4px",
+                  lineHeight: "1.6",
+                  transition: "border-color 0.15s",
+                }}
                 placeholder={`${FIELD_DEFINITIONS[slug].label}を入力…`}
+                onFocus={e => {
+                  (e.currentTarget as HTMLElement).style.borderBottomColor = "#FFB7B2";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 0 0 rgba(255,183,178,0.3)";
+                }}
+                onBlur={e => {
+                  (e.currentTarget as HTMLElement).style.borderBottomColor = "#D4C4B0";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                }}
               />
             </div>
           ))}
@@ -200,7 +243,12 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
           <button
             onClick={handleFinalize}
             disabled={finalizing}
-            className="w-full bg-[#3d2b1f] text-[#f5f0e8] font-bold py-3 rounded-xl hover:bg-[#5c3d2e] transition-colors disabled:opacity-50 cursor-pointer mt-2"
+            className="w-full text-sm font-medium py-3 rounded-2xl transition-all disabled:opacity-50 cursor-pointer mt-2"
+            style={{
+              background: "linear-gradient(135deg, #FFB7B2, #ffcac6)",
+              color: "#4A4A4A",
+              boxShadow: "0 2px 12px rgba(255,183,178,0.35)",
+            }}
           >
             {finalizing ? "保存中..." : "週案を完成にする"}
           </button>
@@ -208,17 +256,39 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
       </div>
 
       {/* ── Right: Chat ── */}
-      <div className="flex-1 flex flex-col bg-[#faf8f3] overflow-hidden">
-        <div className="px-5 py-4 border-b border-[#ece4d4] bg-white flex-shrink-0">
-          <h2 className="text-sm font-bold text-[#3d2b1f]">AIアシスタント</h2>
-          <p className="text-xs text-[#b09070] mt-0.5">先週の様子を話してください。一緒に週案を作ります</p>
+      <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#FDF5E6" }}>
+        <div
+          className="px-6 py-4 flex-shrink-0"
+          style={{
+            background: "rgba(255,255,255,0.72)",
+            backdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(255,183,178,0.15)",
+          }}
+        >
+          <h2
+            className="font-serif-jp text-sm font-bold"
+            style={{ color: "#4A4A4A", letterSpacing: "0.06em" }}
+          >
+            AIアシスタント
+          </h2>
+          <p className="text-xs mt-0.5" style={{ color: "#B4A494" }}>
+            先週の様子を話してください。一緒に週案を作ります
+          </p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Loading state before first response */}
           {messages.length === 0 && streaming && (
             <div className="flex">
-              <div className="bg-white border border-[#ece4d4] rounded-2xl px-4 py-3 text-sm text-[#b09070] animate-pulse">
+              <div
+                className="rounded-2xl px-4 py-3 text-sm animate-pulse"
+                style={{
+                  background: "rgba(255,255,255,0.72)",
+                  backdropFilter: "blur(8px)",
+                  border: "1px solid rgba(255,255,255,0.88)",
+                  color: "#B4A494",
+                }}
+              >
                 考え中...
               </div>
             </div>
@@ -235,27 +305,49 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
               >
                 {displayContent && (
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed ${
+                    className="max-w-[85%] rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap leading-relaxed"
+                    style={
                       msg.role === "user"
-                        ? "bg-[#3d2b1f] text-[#f5f0e8]"
-                        : "bg-white border border-[#ece4d4] text-[#3d2b1f]"
-                    }`}
+                        ? {
+                            background: "linear-gradient(135deg, #FFB7B2, #ffcac6)",
+                            color: "#4A4A4A",
+                            boxShadow: "0 2px 8px rgba(255,183,178,0.3)",
+                          }
+                        : {
+                            background: "rgba(255,255,255,0.72)",
+                            backdropFilter: "blur(8px)",
+                            border: "1px solid rgba(255,255,255,0.88)",
+                            color: "#4A4A4A",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                          }
+                    }
                   >
                     {displayContent}
                   </div>
                 )}
 
                 {proposal && (
-                  <div className="max-w-[85%] bg-[#fff8f0] border border-[#f0d8b8] rounded-xl p-4 space-y-2">
-                    <p className="text-xs font-bold text-[#a85c38]">
-                      ✏️ 【{proposal.fieldLabel}】への提案
+                  <div
+                    className="max-w-[85%] rounded-2xl p-4 space-y-2"
+                    style={{
+                      background: "rgba(255,183,178,0.10)",
+                      border: "1px solid rgba(255,183,178,0.35)",
+                    }}
+                  >
+                    <p className="text-xs font-medium" style={{ color: "#C07060" }}>
+                      【{proposal.fieldLabel}】への提案
                     </p>
-                    <p className="text-sm text-[#3d2b1f] whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: "#4A4A4A" }}>
                       {proposal.text}
                     </p>
                     <button
                       onClick={() => adoptProposal(proposal.fieldLabel, proposal.text)}
-                      className="text-xs bg-[#d4845a] text-white px-4 py-1.5 rounded-lg hover:bg-[#c07040] transition-colors cursor-pointer font-medium"
+                      className="text-xs px-4 py-1.5 rounded-xl transition-all cursor-pointer font-medium"
+                      style={{
+                        background: "linear-gradient(135deg, #FFB7B2, #ffcac6)",
+                        color: "#4A4A4A",
+                        boxShadow: "0 1px 6px rgba(255,183,178,0.35)",
+                      }}
                     >
                       この提案を採用する
                     </button>
@@ -269,7 +361,14 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
         </div>
 
         {/* Input bar */}
-        <div className="px-4 py-4 border-t border-[#ece4d4] bg-white flex-shrink-0">
+        <div
+          className="px-4 py-4 flex-shrink-0"
+          style={{
+            background: "rgba(255,255,255,0.72)",
+            backdropFilter: "blur(12px)",
+            borderTop: "1px solid rgba(255,183,178,0.15)",
+          }}
+        >
           <div className="flex gap-3 items-end">
             <textarea
               value={input}
@@ -283,12 +382,40 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
               rows={2}
               placeholder="今週の様子を話してください…（Shift+Enterで送信）"
               disabled={streaming}
-              className="flex-1 text-sm border border-[#ddd0b8] rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#d4845a] resize-none text-[#3d2b1f] placeholder-[#c4aa8a] disabled:opacity-50"
+              style={{
+                flex: 1,
+                fontSize: "0.875rem",
+                border: "none",
+                borderBottom: "1.5px solid #D4C4B0",
+                background: "transparent",
+                outline: "none",
+                resize: "none",
+                color: "#4A4A4A",
+                padding: "8px 4px",
+                lineHeight: "1.6",
+                transition: "border-color 0.15s",
+                opacity: streaming ? 0.5 : 1,
+              }}
+              onFocus={e => {
+                if (!streaming) {
+                  (e.currentTarget as HTMLElement).style.borderBottomColor = "#FFB7B2";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 0 0 rgba(255,183,178,0.3)";
+                }
+              }}
+              onBlur={e => {
+                (e.currentTarget as HTMLElement).style.borderBottomColor = "#D4C4B0";
+                (e.currentTarget as HTMLElement).style.boxShadow = "none";
+              }}
             />
             <button
               onClick={sendMessage}
               disabled={streaming || !input.trim()}
-              className="px-5 py-2.5 bg-[#3d2b1f] text-[#f5f0e8] rounded-xl hover:bg-[#5c3d2e] transition-colors disabled:opacity-50 cursor-pointer text-sm font-medium self-end"
+              className="text-sm font-medium px-5 py-2.5 rounded-2xl transition-all disabled:opacity-50 cursor-pointer self-end"
+              style={{
+                background: "linear-gradient(135deg, #FFB7B2, #ffcac6)",
+                color: "#4A4A4A",
+                boxShadow: "0 2px 8px rgba(255,183,178,0.35)",
+              }}
             >
               送信
             </button>

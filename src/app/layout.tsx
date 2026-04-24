@@ -3,20 +3,23 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "HoikuNote",
-    template: "%s | HoikuNote",
+    default: "ことのは",
+    template: "%s | ことのは",
   },
-  description:
-    "保育士が週の様子をメモするだけでAIが指導計画を作成。全国の保育士と知見を共有できるプラットフォーム。",
+  description: "子どもの今を、言葉に。保育士のためのAI週案作成サービス。",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

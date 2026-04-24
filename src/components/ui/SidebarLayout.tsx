@@ -18,11 +18,11 @@ export function SidebarLayout({ user, children }: Props) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#faf8f3]">
+    <div className="flex min-h-screen" style={{ background: "#FDF5E6" }}>
       <Sidebar user={user} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
       <main
         className="flex-1 transition-[margin] duration-200 min-h-screen"
-        style={{ marginLeft: collapsed ? 64 : 224 }}
+        style={{ marginLeft: collapsed ? 72 : 256 }}
       >
         {children}
       </main>

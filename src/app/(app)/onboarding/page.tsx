@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { FormatWizard } from "@/components/onboarding/FormatWizard";
 
-export const metadata: Metadata = { title: "週案フォーマット設定 | HoikuNote" };
+export const metadata: Metadata = { title: "フォーマット設定 | ことのは" };
 
 export default async function OnboardingPage() {
   const session = await auth();
@@ -16,19 +16,34 @@ export default async function OnboardingPage() {
   if (config) redirect("/plans");
 
   return (
-    <div className="min-h-screen bg-[#faf8f3] flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-lg">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{ background: "#FDF5E6" }}
+    >
+      {/* Blob decorations */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-10 right-10 w-72 h-72 rounded-full" style={{ background: "rgba(255,183,178,0.1)", filter: "blur(56px)" }}/>
+        <div className="absolute bottom-20 left-10 w-80 h-80 rounded-full" style={{ background: "rgba(178,226,242,0.1)", filter: "blur(64px)" }}/>
+      </div>
+
+      <div className="relative z-10 w-full max-w-lg">
+        {/* Header */}
         <div className="text-center mb-8">
-          <CupLogo />
-          <h1 className="text-2xl font-bold text-[#3d2b1f] mt-4">
+          <LeafIllustration />
+          <h1
+            className="font-serif-jp font-bold mt-5 mb-2"
+            style={{ fontSize: "22px", color: "#4A4A4A", letterSpacing: "0.06em" }}
+          >
             週案フォーマットを設定しましょう
           </h1>
-          <p className="text-sm text-[#b09070] mt-2">
+          <p className="text-sm leading-relaxed" style={{ color: "#B0A090" }}>
             あなたの園・クラスに合わせた週案フォーマットを設定します。<br />
             あとからいつでも変更できます。
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-[#ece4d4] p-7 shadow-sm">
+
+        {/* Wizard card */}
+        <div className="glass rounded-3xl p-7">
           <FormatWizard />
         </div>
       </div>
@@ -36,16 +51,19 @@ export default async function OnboardingPage() {
   );
 }
 
-function CupLogo() {
+function LeafIllustration() {
   return (
     <div className="flex justify-center">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-        <path d="M7 17 Q7 33 20 33 Q33 33 33 17 Z" stroke="#3d2b1f" strokeWidth="2.5" fill="none"/>
-        <rect x="6" y="11" width="28" height="8" rx="4" stroke="#3d2b1f" strokeWidth="2.5" fill="none"/>
-        <path d="M33 18 Q41 18 41 25 Q41 32 33 32" stroke="#3d2b1f" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-        <path d="M14 6 Q13 3 14 1" stroke="#d4845a" strokeWidth="1.8" strokeLinecap="round"/>
-        <path d="M20 5 Q19 2 20 0" stroke="#d4845a" strokeWidth="1.8" strokeLinecap="round"/>
-        <path d="M26 6 Q25 3 26 1" stroke="#d4845a" strokeWidth="1.8" strokeLinecap="round"/>
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <circle cx="28" cy="28" r="28" fill="rgba(209,232,226,0.3)"/>
+        <path
+          d="M28 10 C28 10 14 20 14 32 C14 40 20.3 46 28 46 C35.7 46 42 40 42 32 C42 20 28 10 28 10Z"
+          fill="#D1E8E2" stroke="#B8D8CE" strokeWidth="1.5"
+        />
+        <path d="M28 16 L28 43" stroke="#9EC8BC" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M28 26 L35 22" stroke="#9EC8BC" strokeWidth="1" strokeLinecap="round"/>
+        <path d="M28 32 L35 28" stroke="#9EC8BC" strokeWidth="1" strokeLinecap="round"/>
+        <path d="M28 26 L21 22" stroke="#9EC8BC" strokeWidth="1" strokeLinecap="round" opacity="0.7"/>
       </svg>
     </div>
   );

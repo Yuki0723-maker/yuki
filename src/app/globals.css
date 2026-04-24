@@ -1,22 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream-50: #faf8f3;
-  --color-cream-100: #f5f0e8;
-  --color-cream-200: #ece4d4;
-  --color-cream-300: #ddd0b8;
-
-  --color-warm-300: #e8a87c;
-  --color-warm-400: #d4845a;
-  --color-warm-500: #c4704a;
-  --color-warm-600: #a85c38;
-  --color-warm-700: #8a4828;
-
-  --color-brown-700: #5c3d2e;
-  --color-brown-800: #3d2b1f;
-  --color-brown-900: #2d1a0e;
-
-  --font-sans: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', system-ui, sans-serif;
+  --color-sakura:       #FFB7B2;
+  --color-wasurenagusa: #B2E2F2;
+  --color-wakanae:      #D1E8E2;
+  --color-sumi:         #4A4A4A;
+  --color-kinari:       #FDF5E6;
+  --color-mori:         #384D48;
 }
 
 * {
@@ -24,7 +14,56 @@
 }
 
 body {
-  font-family: var(--font-sans);
-  background-color: #faf8f3;
-  color: #3d2b1f;
+  font-family: 'Zen Maru Gothic', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', system-ui, sans-serif;
+  background-color: #FDF5E6;
+  color: #4A4A4A;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.glass-dark {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Font family */
+.font-serif-jp {
+  font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', Georgia, serif;
+}
+
+/* Sakura focus ring on inputs */
+.input-kotonoha {
+  border: none;
+  border-bottom: 1.5px solid #D4C4B0;
+  border-radius: 0;
+  background: transparent;
+  padding: 8px 4px;
+  transition: border-color 0.25s ease;
+  outline: none;
+  color: #4A4A4A;
+  font-family: 'Zen Maru Gothic', sans-serif;
+}
+.input-kotonoha:focus {
+  border-bottom-color: #FFB7B2;
+  box-shadow: 0 2px 0 0 rgba(255, 183, 178, 0.3);
+}
+
+/* Smooth gradient animation for hero */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.float-anim {
+  animation: float 5s ease-in-out infinite;
 }
