@@ -23,6 +23,7 @@ const navItems = [
   { href: "/community",      label: "コミュニティ",   icon: "leaf" },
   { href: "/settings/format", label: "フォーマット設定", icon: "file" },
   { href: "/profile",        label: "マイページ",     icon: "user" },
+  { href: "#logout",         label: "ログアウト",     icon: "logout", isLogout: true },
 ];
 
 const icons: Record<string, React.ReactElement> = {
@@ -56,6 +57,13 @@ const icons: Record<string, React.ReactElement> = {
       <path d="M2 14C2 11 4.5 9 8 9C11.5 9 14 11 14 14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
     </svg>
   ),
+  logout: (
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+      <path d="M6 2H3C2.4 2 2 2.4 2 3V13C2 13.6 2.4 14 3 14H6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+      <path d="M10 5L13 8L10 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="13" y1="8" x2="6" y2="8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+    </svg>
+  ),
 };
 
 export function Sidebar({ user, collapsed, onToggle }: Props) {
@@ -74,13 +82,16 @@ export function Sidebar({ user, collapsed, onToggle }: Props) {
       }}
     >
       {/* Header */}
-      <div className="flex items-center h-16 px-4 gap-2 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,183,178,0.2)" }}>
+      <div className="flex items-center px-4 gap-2 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,183,178,0.2)", minHeight: collapsed ? 64 : 72 }}>
         {!collapsed && (
-          <Link href="/plans" className="flex items-center gap-2 flex-1 min-w-0">
+          <Link href="/plans" className="flex items-center gap-2 flex-1 min-w-0 py-3">
             <LeafLogo />
-            <span className="font-serif-jp text-base font-bold tracking-widest truncate" style={{ color: "#4A4A4A", letterSpacing: "0.12em" }}>
-              ことのは
-            </span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-serif-jp text-base font-bold truncate" style={{ color: "#4A4A4A", letterSpacing: "0.12em" }}>
+                ことのは
+              </span>
+              <span className="text-xs truncate" style={{ color: "#B0A090" }}>子どもの今を、言葉に。</span>
+            </div>
           </Link>
         )}
         {collapsed && (
@@ -113,8 +124,8 @@ export function Sidebar({ user, collapsed, onToggle }: Props) {
           </button>
         )}
 
-        {navItems.map(({ href, label, icon, primary }) => {
-          const isActive = !primary && (
+        {navItems.map(({ href, label, icon, primary, isLogout }) => {
+          const isActive = !primary && !isLogout && (
             pathname === href ||
             (href !== "/plans" && pathname.startsWith(href))
           );
@@ -139,6 +150,29 @@ export function Sidebar({ user, collapsed, onToggle }: Props) {
                 <span className="flex-shrink-0">{icons[icon]}</span>
                 {!collapsed && <span>{label}</span>}
               </Link>
+            );
+          }
+
+          if (isLogout) {
+            return (
+              <button
+                key="logout"
+                onClick={() => signOut({ callbackUrl: "/" })}
+                title={collapsed ? label : undefined}
+                className="w-full flex items-center rounded-2xl text-sm font-medium transition-all cursor-pointer"
+                style={{
+                  minHeight: 44,
+                  justifyContent: collapsed ? "center" : undefined,
+                  gap: collapsed ? 0 : 10,
+                  padding: collapsed ? "0" : "10px 14px",
+                  background: "transparent",
+                  color: "#A08878",
+                  borderLeft: "2px solid transparent",
+                }}
+              >
+                <span className="flex-shrink-0">{icons[icon]}</span>
+                {!collapsed && <span>{label}</span>}
+              </button>
             );
           }
 
@@ -167,50 +201,33 @@ export function Sidebar({ user, collapsed, onToggle }: Props) {
 
       {/* User area */}
       <div
-        className={`flex-shrink-0 ${collapsed ? "p-3" : "px-4 py-4"}`}
+        className={`flex-shrink-0 ${collapsed ? "p-3" : "px-4 py-3"}`}
         style={{ borderTop: "1px solid rgba(255,183,178,0.2)" }}
       >
         {collapsed ? (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center">
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
               style={{ background: "rgba(255,183,178,0.25)", color: "#A08878" }}
             >
               {(user.name ?? user.email ?? "?")[0].toUpperCase()}
             </div>
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="transition-colors cursor-pointer"
-              style={{ color: "#C4A898" }}
-              title="ログアウト"
-            >
-              <LogoutIcon />
-            </button>
           </div>
         ) : (
-          <>
-            <div className="flex items-center gap-3 mb-2">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                style={{ background: "rgba(255,183,178,0.25)", color: "#A08878" }}
-              >
-                {(user.name ?? user.email ?? "?")[0].toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate" style={{ color: "#4A4A4A" }}>
-                  {user.name ?? "保育士さん"}
-                </p>
-                <p className="text-xs truncate" style={{ color: "#B0A098" }}>{user.email}</p>
-              </div>
-            </div>
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="w-full text-xs py-1 cursor-pointer transition-colors text-left"
-              style={{ color: "#C4A898" }}
+          <div className="flex items-center gap-3">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+              style={{ background: "rgba(255,183,178,0.25)", color: "#A08878" }}
             >
-              ログアウト
-            </button>
-          </>
+              {(user.name ?? user.email ?? "?")[0].toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate" style={{ color: "#4A4A4A" }}>
+                {user.name ?? "保育士さん"}
+              </p>
+              <p className="text-xs truncate" style={{ color: "#B0A098" }}>{user.email}</p>
+            </div>
+          </div>
         )}
       </div>
     </aside>

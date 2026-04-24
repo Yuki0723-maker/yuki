@@ -4,68 +4,111 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/auth/LoginForm";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "ログイン" };
+export const metadata: Metadata = { title: "ログイン | ことのは" };
 
 export default async function LoginPage() {
   const session = await auth();
   if (session) redirect("/plans");
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#FDF5E6" }}>
-      {/* Left illustration panel */}
+    <div className="min-h-screen flex">
+      {/* ── Left watercolor panel ── */}
       <div
-        className="hidden lg:flex w-1/2 items-center justify-center relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #D1E8E2 0%, #B2E2F2 50%, #FFB7B2 100%)" }}
+        className="hidden lg:block w-1/2 relative overflow-hidden"
+        style={{
+          background: [
+            "radial-gradient(ellipse 75% 65% at 15% 20%, rgba(175,218,238,0.98) 0%, transparent 65%)",
+            "radial-gradient(ellipse 70% 60% at 82% 12%, rgba(155,208,230,0.85) 0%, transparent 62%)",
+            "radial-gradient(ellipse 62% 58% at 58% 52%, rgba(188,228,208,0.72) 0%, transparent 62%)",
+            "radial-gradient(ellipse 68% 62% at 18% 82%, rgba(255,182,175,0.72) 0%, transparent 65%)",
+            "radial-gradient(ellipse 60% 55% at 88% 82%, rgba(255,198,188,0.62) 0%, transparent 60%)",
+            "#BED9EC",
+          ].join(", "),
+        }}
       >
-        {/* Soft blob decorations */}
-        <div className="absolute top-12 left-12 w-48 h-48 rounded-full" style={{ background: "rgba(255,255,255,0.18)", filter: "blur(32px)" }}/>
-        <div className="absolute bottom-16 right-8 w-64 h-64 rounded-full" style={{ background: "rgba(255,255,255,0.12)", filter: "blur(40px)" }}/>
+        {/* Sun – upper right */}
+        <div className="absolute" style={{ top: 60, right: 90 }}>
+          <DecorSun size={72} />
+        </div>
 
-        <div className="relative z-10 flex flex-col items-center gap-8 px-12">
-          {/* Floating illustration */}
-          <div className="float-anim">
-            <LoginIllustration />
-          </div>
-          <div className="text-center glass rounded-3xl px-8 py-6">
-            <div className="flex items-center justify-center gap-2 mb-3">
+        {/* Music notes – scattered */}
+        <div className="absolute" style={{ top: 85,  left: 82  }}><DecorNote size={28} /></div>
+        <div className="absolute" style={{ top: 145, left: 195 }}><DecorNote size={22} /></div>
+        <div className="absolute" style={{ top: 230, left: 110 }}><DecorNote size={18} /></div>
+        <div className="absolute" style={{ top: 200, right: 170 }}><DecorNote size={25} /></div>
+        <div className="absolute" style={{ top: 340, right: 100 }}><DecorNote size={20} /></div>
+        <div className="absolute" style={{ top: 430, left: 240 }}><DecorNote size={16} /></div>
+
+        {/* Crayons – lower-left cluster */}
+        <div className="absolute" style={{ bottom: 190, left: 55 }}>
+          <DecorCrayons />
+        </div>
+
+        {/* Plant sprout – lower-right area */}
+        <div className="absolute" style={{ bottom: 158, right: 110 }}>
+          <DecorPlant size={54} />
+        </div>
+
+        {/* Brand card – bottom-left */}
+        <div className="absolute" style={{ bottom: 48, left: 48 }}>
+          <div
+            className="rounded-3xl px-8 py-6"
+            style={{
+              background: "rgba(255,255,255,0.72)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+            }}
+          >
+            <div className="flex items-center gap-2 mb-2">
               <LeafLogo />
-              <span className="font-serif-jp text-xl font-bold tracking-widest" style={{ color: "#4A4A4A", letterSpacing: "0.14em" }}>
+              <span className="font-serif-jp text-lg font-bold" style={{ color: "#4A4A4A", letterSpacing: "0.12em" }}>
                 ことのは
               </span>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: "#6A8A7A" }}>
-              子どもの今を、言葉に。<br/>
+              子どもの今を、言葉に。<br />
               保育士さんのためのAI週案アシスタント
             </p>
           </div>
         </div>
       </div>
 
-      {/* Right login panel */}
-      <div className="flex-1 flex items-center justify-center px-6">
+      {/* ── Right login panel ── */}
+      <div className="flex-1 flex items-center justify-center px-6" style={{ background: "#FDF5E6" }}>
         <div className="w-full max-w-sm">
+          {/* Logo + tagline */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2">
               <LeafLogo />
-              <span className="font-serif-jp text-xl font-bold tracking-widest" style={{ color: "#4A4A4A", letterSpacing: "0.14em" }}>
+              <span className="font-serif-jp text-xl font-bold" style={{ color: "#4A4A4A", letterSpacing: "0.14em" }}>
                 ことのは
               </span>
             </Link>
             <p className="mt-2 text-sm" style={{ color: "#A09080" }}>子どもの今を、言葉に。</p>
           </div>
 
-          <div className="glass rounded-3xl p-8 shadow-sm">
+          {/* Form card */}
+          <div
+            className="rounded-3xl p-8"
+            style={{
+              background: "white",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
+            }}
+          >
             <LoginForm />
           </div>
 
           <p className="text-center text-xs mt-6" style={{ color: "#B0A090" }}>
-            © 2025 ことのは
+            © 2026 ことのは
           </p>
         </div>
       </div>
     </div>
   );
 }
+
+/* ── Shared SVG decorations ── */
 
 function LeafLogo() {
   return (
@@ -78,52 +121,77 @@ function LeafLogo() {
   );
 }
 
-function LoginIllustration() {
+function DecorSun({ size = 70 }: { size?: number }) {
+  const r = size / 2;
+  const inner = r * 0.38;
   return (
-    <svg width="260" height="200" viewBox="0 0 260 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="130" cy="188" rx="100" ry="8" fill="rgba(255,255,255,0.25)"/>
+    <svg width={size + 20} height={size + 20} viewBox="0 0 90 90" fill="none">
+      {/* Rays */}
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+        const rad = (deg * Math.PI) / 180;
+        const x1 = 45 + (inner + 4) * Math.cos(rad);
+        const y1 = 45 + (inner + 4) * Math.sin(rad);
+        const x2 = 45 + (r + 8) * Math.cos(rad);
+        const y2 = 45 + (r + 8) * Math.sin(rad);
+        return <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FFDB36" strokeWidth="2.8" strokeLinecap="round"/>;
+      })}
+      <circle cx="45" cy="45" r={r} fill="#FFE868" stroke="#FFD040" strokeWidth="0.8"/>
+      {/* Eyes */}
+      <ellipse cx="38" cy="40" rx="2.8" ry="3.4" fill="#5A4015"/>
+      <ellipse cx="52" cy="40" rx="2.8" ry="3.4" fill="#5A4015"/>
+      {/* Smile */}
+      <path d="M37 54 Q45 63 53 54" stroke="#5A4015" strokeWidth="2" strokeLinecap="round" fill="none"/>
+      {/* Cheeks */}
+      <circle cx="33" cy="52" r="5" fill="rgba(255,140,110,0.3)"/>
+      <circle cx="57" cy="52" r="5" fill="rgba(255,140,110,0.3)"/>
+    </svg>
+  );
+}
 
-      {/* Blocks */}
-      <rect x="68" y="148" width="30" height="30" rx="7" fill="rgba(255,255,255,0.7)" stroke="rgba(255,183,178,0.6)" strokeWidth="1.2"/>
-      <rect x="100" y="155" width="26" height="23" rx="6" fill="rgba(255,255,255,0.65)" stroke="rgba(178,226,242,0.6)" strokeWidth="1.2"/>
-      <rect x="68" y="122" width="30" height="28" rx="6" fill="rgba(255,255,255,0.65)" stroke="rgba(209,232,226,0.6)" strokeWidth="1.2"/>
-      <rect x="130" y="160" width="20" height="18" rx="5" fill="rgba(255,255,255,0.6)" stroke="rgba(255,183,178,0.5)" strokeWidth="1.2"/>
+function DecorNote({ size = 24 }: { size?: number }) {
+  const color = "#9ABCE0";
+  return (
+    <svg width={size} height={size * 1.5} viewBox="0 0 24 36" fill="none">
+      <ellipse cx="8" cy="30" rx="8" ry="6" fill={color} transform="rotate(-18 8 30)"/>
+      <line x1="15.5" y1="25" x2="15.5" y2="4" stroke={color} strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M15.5 4 Q23 8 20 16 Q17 24 15.5 25" fill={color}/>
+    </svg>
+  );
+}
 
-      {/* Child */}
-      <circle cx="96" cy="110" r="18" fill="rgba(255,255,255,0.8)" stroke="rgba(255,183,178,0.4)" strokeWidth="1"/>
-      <path d="M79 105 Q83 91 96 89 Q109 91 113 105" fill="rgba(200,149,108,0.3)"/>
-      <circle cx="88" cy="114" r="4.5" fill="rgba(255,183,178,0.3)"/>
-      <circle cx="104" cy="114" r="4.5" fill="rgba(255,183,178,0.3)"/>
-      <circle cx="90" cy="108" r="2.2" fill="#4A4A4A"/>
-      <circle cx="102" cy="108" r="2.2" fill="#4A4A4A"/>
-      <circle cx="91" cy="107" r="0.9" fill="white"/>
-      <circle cx="103" cy="107" r="0.9" fill="white"/>
-      <path d="M91 117 Q96 122 101 117" stroke="rgba(192,130,106,0.8)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-      <ellipse cx="96" cy="134" rx="14" ry="12" fill="rgba(255,255,255,0.75)"/>
-      <path d="M83 138 Q76 150 80 158" stroke="rgba(255,255,255,0.8)" strokeWidth="9" strokeLinecap="round"/>
-      <path d="M110 138 Q117 150 113 158" stroke="rgba(255,255,255,0.8)" strokeWidth="9" strokeLinecap="round"/>
-      <path d="M83 136 Q83 148 96 148 Q109 148 109 136 Z" fill="rgba(255,183,178,0.3)"/>
+function DecorCrayons() {
+  const colors = [
+    { body: "#7BBF72", dark: "#5EA055", light: "rgba(255,255,255,0.28)" },
+    { body: "#6AB068", dark: "#529050", light: "rgba(255,255,255,0.24)" },
+    { body: "#88C880", dark: "#6AAA60", light: "rgba(255,255,255,0.32)" },
+  ];
+  const angles = [-30, -12, 8];
+  return (
+    <svg width="130" height="130" viewBox="0 0 130 130" fill="none">
+      {colors.map((c, i) => {
+        const cx = 38 + i * 26;
+        const cy = 65;
+        const rot = angles[i];
+        return (
+          <g key={i} transform={`translate(${cx},${cy}) rotate(${rot})`}>
+            <rect x="-7" y="-50" width="14" height="68" rx="4" fill={c.body}/>
+            <path d="M-7 18 L0 34 L7 18 Z" fill={c.dark}/>
+            <rect x="-5" y="-35" width="5" height="45" rx="2.5" fill={c.light}/>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
-      {/* Teacher */}
-      <path d="M162 190 L159 148 Q168 142 177 148 L174 190 Z" fill="rgba(209,232,226,0.55)"/>
-      <ellipse cx="168" cy="145" rx="13" ry="12" fill="rgba(255,255,255,0.8)"/>
-      <circle cx="168" cy="119" r="20" fill="rgba(255,255,255,0.82)" stroke="rgba(209,232,226,0.5)" strokeWidth="1"/>
-      <path d="M149 113 Q153 96 168 94 Q183 96 187 113" fill="rgba(122,85,64,0.3)"/>
-      <circle cx="185" cy="100" r="7" fill="rgba(122,85,64,0.22)"/>
-      <circle cx="159" cy="122" r="5.5" fill="rgba(255,183,178,0.25)"/>
-      <circle cx="177" cy="122" r="5.5" fill="rgba(255,183,178,0.25)"/>
-      <path d="M161 114 Q164 112 166 114" stroke="#4A4A4A" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
-      <path d="M170 114 Q173 112 176 114" stroke="#4A4A4A" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
-      <path d="M161 125 Q168 131 175 125" stroke="rgba(192,130,106,0.8)" strokeWidth="1.6" fill="none" strokeLinecap="round"/>
-      <path d="M156 146 Q144 155 133 162" stroke="rgba(255,255,255,0.85)" strokeWidth="10" strokeLinecap="round"/>
-      <path d="M156 146 Q144 155 133 162" stroke="rgba(209,232,226,0.6)" strokeWidth="2" strokeLinecap="round" fill="none"/>
-
-      {/* Decorations */}
-      <circle cx="220" cy="40" r="12" fill="rgba(255,220,128,0.45)"/>
-      <circle cx="220" cy="40" r="7" fill="rgba(255,220,128,0.55)"/>
-      <path d="M220 21 L220 14" stroke="rgba(255,220,128,0.6)" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M232 28 L237 23" stroke="rgba(255,220,128,0.6)" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M208 28 L203 23" stroke="rgba(255,220,128,0.6)" strokeWidth="1.8" strokeLinecap="round"/>
+function DecorPlant({ size = 54 }: { size?: number }) {
+  const s = size / 54;
+  return (
+    <svg width={size} height={size * 1.3} viewBox="0 0 54 70" fill="none">
+      <path d="M27 70 L27 35" stroke="#7DB880" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M27 48 Q42 36 46 46 Q42 56 27 52 Z" fill="#7DB880"/>
+      <path d="M27 38 Q12 26 8 36 Q12 46 27 42 Z" fill="#9DC89E" opacity="0.85"/>
+      <path d="M27 62 Q40 52 43 61 Q40 70 27 66 Z" fill="#9DC89E" opacity="0.7"/>
     </svg>
   );
 }
