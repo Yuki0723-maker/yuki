@@ -2,39 +2,34 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { OnboardingForm } from "@/components/onboarding/OnboardingForm";
+import { FormatWizard } from "@/components/onboarding/FormatWizard";
 
-export const metadata: Metadata = { title: "クラス情報の登録" };
+export const metadata: Metadata = { title: "週案フォーマット設定 | HoikuNote" };
 
 export default async function OnboardingPage() {
   const session = await auth();
   if (!session) redirect("/login");
 
-  const user = await db.user.findUnique({
-    where: { id: session.user.id },
-    select: { name: true, targetAge: true },
+  const config = await db.userFormatConfig.findUnique({
+    where: { userId: session.user.id },
   });
-
-  // すでに登録済みならホームへ
-  if (user?.targetAge !== null && user?.targetAge !== undefined) {
-    redirect("/plans");
-  }
+  if (config) redirect("/plans");
 
   return (
-    <div className="min-h-screen bg-[#faf8f3] flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[#faf8f3] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-lg">
         <div className="text-center mb-8">
           <CupLogo />
           <h1 className="text-2xl font-bold text-[#3d2b1f] mt-4">
-            ようこそ、{user?.name ?? "保育士さん"}
+            週案フォーマットを設定しましょう
           </h1>
           <p className="text-sm text-[#b09070] mt-2">
-            まず、担当クラスの情報を教えてください。<br />
-            週案をより的確に作るために使います。
+            あなたの園・クラスに合わせた週案フォーマットを設定します。<br />
+            あとからいつでも変更できます。
           </p>
         </div>
         <div className="bg-white rounded-2xl border border-[#ece4d4] p-7 shadow-sm">
-          <OnboardingForm />
+          <FormatWizard />
         </div>
       </div>
     </div>

@@ -21,16 +21,17 @@ model User {
   childrenNote  String?  @db.Text // 子どもたちの傾向・気になっていること
   createdAt     DateTime @default(now())
 
-  memos         DailyMemo[]
-  plans         WeeklyPlan[]
-  lineUser      LineUser?
-  templates     PlanTemplate[]
-  posts         CommunityPost[]
-  likes         PostLike[]
-  savedPosts    SavedPost[]
-  following     Follow[]        @relation("Following")
-  followers     Follow[]        @relation("Followers")
-  annualEvents  AnnualEvent[]
+  memos            DailyMemo[]
+  plans            WeeklyPlan[]
+  lineUser         LineUser?
+  templates        PlanTemplate[]
+  posts            CommunityPost[]
+  likes            PostLike[]
+  savedPosts       SavedPost[]
+  following        Follow[]        @relation("Following")
+  followers        Follow[]        @relation("Followers")
+  annualEvents     AnnualEvent[]
+  userFormatConfig UserFormatConfig?
 
   // NextAuth
   accounts Account[]
@@ -64,6 +65,9 @@ model WeeklyPlan {
   isPublic      Boolean  @default(false)
   weekTheme     String?
   reflection    String?  @db.Text
+  fields        Json?
+  isDraft       Boolean  @default(false)
+  updatedAt     DateTime @updatedAt @default(now())
   createdAt     DateTime @default(now())
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -199,6 +203,18 @@ model Follow {
   following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
+}
+
+model UserFormatConfig {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  facilityType String
+  layoutType   String
+  activeFields String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // NextAuth.js 必須モデル
