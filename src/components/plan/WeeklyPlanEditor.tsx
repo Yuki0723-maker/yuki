@@ -21,33 +21,33 @@ const HEADER_FIELDS: FieldSlug[] = [
   "class_name", "week_date", "teacher_name", "enrollment_count", "month_plan_week",
 ];
 
-// Field-specific prompts — tell AI to ask a question, not generate a proposal yet
-const FIELD_FOCUS_PROMPTS: Partial<Record<FieldSlug, string>> = {
-  prev_week_observation: "「前週の子どもの姿」を書きたいです。先週の様子について、まず私に質問してください。",
-  weekly_goal:           "「今週のねらい」を考えたいです。ねらいを一緒に考えるために、まず私に質問してください。",
-  activities:            "「活動内容」を入力したいです。活動を考えるために、まず私に質問してください。",
-  child_behavior_prediction: "「予想される子どもの姿」を書きたいです。子どもの姿を予想するために、まず私に質問してください。",
-  teacher_support:       "「保育者の援助・関わり」を考えたいです。援助の内容を考えるために、まず私に質問してください。",
-  environment_setup:     "「環境構成」を入力したいです。環境を考えるために、まず私に質問してください。",
-  individual_care:       "「個別配慮」を書きたいです。個別配慮を考えるために、まず私に質問してください。",
-  health_safety:         "「健康・安全配慮」を書きたいです。健康・安全面について、まず私に質問してください。",
-  food_education:        "「食育・給食」について書きたいです。食育の内容を考えるために、まず私に質問してください。",
-  family_community:      "「家庭・地域連携」を書きたいです。連携の内容を考えるために、まず私に質問してください。",
-  weather_contingency:   "「天候・雨天対応」を考えたいです。雨天対応を考えるために、まず私に質問してください。",
-  weekly_reflection:     "「週の反省・評価」を書きたいです。振り返りをまとめるために、まず私に質問してください。",
-  five_domains:          "「保育の5領域」を整理したいです。5領域の整理をするために、まず私に質問してください。",
-  sleep_feeding_record:  "「睡眠・授乳・おむつ記録」を書きたいです。記録を考えるために、まず私に質問してください。",
-  individual_development:"「個別月齢発達記録」を書きたいです。発達記録を考えるために、まず私に質問してください。",
-  parent_communication:  "「保護者との連絡帳連携」を考えたいです。連絡内容を考えるために、まず私に質問してください。",
-  allergy_response:      "「離乳食・アレルギー対応」を書きたいです。食事対応を考えるために、まず私に質問してください。",
-  duty_activities:       "「当番活動・係活動」を考えたいです。役割活動を考えるために、まず私に質問してください。",
-  group_play:            "「ルール遊び・集団活動」を考えたいです。集団活動を考えるために、まず私に質問してください。",
-  nap_record:            "「午睡の有無と記録」を書きたいです。午睡の計画を考えるために、まず私に質問してください。",
-  school_readiness:      "「就学前準備」を書きたいです。就学前の取り組みを考えるために、まず私に質問してください。",
-  structured_free_play:  "「課業・自由遊びの区分」を考えたいです。保育の区分を考えるために、まず私に質問してください。",
-  subject_goals:         "「教科・領域別ねらい」を整理したいです。領域別ねらいを考えるために、まず私に質問してください。",
-  parent_newsletter:     "「保護者向け連絡事項」を書きたいです。連絡事項を考えるために、まず私に質問してください。",
-  extended_care:         "「預かり保育対応」を考えたいです。預かり保育の内容を考えるために、まず私に質問してください。",
+// Predefined opening questions shown instantly when a field is clicked (no API call)
+const FIELD_OPENING_QUESTIONS: Partial<Record<FieldSlug, string>> = {
+  prev_week_observation:     "先週、子どもたちはどんな遊びや活動をしていましたか？印象に残った場面があれば教えてください。",
+  weekly_goal:               "今週のクラスで特に大切にしたいこと、子どもたちに経験してほしいことはありますか？",
+  activities:                "今週はどんな活動を考えていますか？室内・戸外、制作・体験など思いつくものを教えてください。",
+  child_behavior_prediction: "計画している活動の中で、子どもたちがどんなふうに反応しそうか、楽しみにしていることはありますか？",
+  teacher_support:           "子どもたちへの関わりで、今週特に意識したいことや気をつけたいことはありますか？",
+  environment_setup:         "今週の活動に向けて、どんな空間や道具・素材を用意しようと考えていますか？",
+  individual_care:           "今週、特に気にかけている子どもや、個別に配慮が必要な場面はありますか？",
+  health_safety:             "今週、健康面や安全面で特に気をつけたいことはありますか？体調の変化や季節の影響なども教えてください。",
+  food_education:            "今週の給食や食育で、子どもたちに伝えたいことや取り組みたいことはありますか？",
+  family_community:          "今週、保護者に伝えたいことや、地域との関わりで予定していることはありますか？",
+  weather_contingency:       "天気が悪くて外に出られない場合、どんな室内活動を考えていますか？",
+  weekly_reflection:         "今週を振り返ってみて、うまくいったことや次に活かしたいことを教えてください。",
+  five_domains:              "今週の活動は、5領域（健康・人間関係・環境・言葉・表現）とどんなつながりがありましたか？",
+  sleep_feeding_record:      "今週の子どもたちの睡眠や授乳・おむつのリズムで、気になることや変化はありましたか？",
+  individual_development:    "子どもたちの発達で、今週気づいたことや成長を感じた場面を教えてください。",
+  parent_communication:      "今週、連絡帳を通じて保護者と共有したいことや気になる家庭の様子はありますか？",
+  allergy_response:          "今週の食事対応で、アレルギーや離乳食に関して特に確認しておきたいことはありますか？",
+  duty_activities:           "今週の当番活動や係活動で、どんなことを子どもたちに任せる予定ですか？",
+  group_play:                "今週予定している集団遊びやルール遊びを教えてください。子どもたちの好きな遊びも合わせて。",
+  nap_record:                "今週の午睡について、時間や対応で気をつけたいことはありますか？",
+  school_readiness:          "就学に向けて、今週特に意識して取り組みたいことはありますか？",
+  structured_free_play:      "今週の設定保育と自由遊び、どんなバランスで考えていますか？",
+  subject_goals:             "今週、各領域でどんなことを大切にしたいですか？特に力を入れたい領域はありますか？",
+  parent_newsletter:         "今週のクラスだよりや保護者への連絡で、伝えたいことを教えてください。",
+  extended_care:             "今週の預かり保育で、どんな活動や過ごし方を予定していますか？",
 };
 
 function parseProposal(content: string): { fieldLabel: string; text: string } | null {
@@ -169,22 +169,20 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
     await streamChat(newMessages);
   };
 
-  // Triggered when user clicks a content field
+  // Triggered when user clicks a content field — shows predefined question instantly, no API call
   const handleFieldFocus = useCallback((slug: FieldSlug) => {
     if (streaming) return;
     if (slug === focusedField) return;
     setFocusedField(slug);
 
-    const promptText = FIELD_FOCUS_PROMPTS[slug]
-      ?? `「${FIELD_DEFINITIONS[slug].label}」を入力したいです。内容を一緒に考えてください。`;
+    const question = FIELD_OPENING_QUESTIONS[slug]
+      ?? `「${FIELD_DEFINITIONS[slug].label}」について教えてください。`;
 
-    const focusMsg: Message = { role: "focus", content: promptText, slug };
-    setMessages(prev => {
-      const next = [...prev, focusMsg];
-      streamChat(next);
-      return next;
-    });
-  }, [streaming, focusedField, streamChat]);
+    // Focus pill + predefined assistant question (instant, no API call)
+    const focusMsg: Message = { role: "focus", content: `「${FIELD_DEFINITIONS[slug].label}」について話しています。`, slug };
+    const questionMsg: Message = { role: "assistant", content: question };
+    setMessages(prev => [...prev, focusMsg, questionMsg]);
+  }, [streaming, focusedField]);
 
   const adoptProposal = async (fieldLabel: string, text: string) => {
     const slug = findSlugByLabel(fieldLabel);
