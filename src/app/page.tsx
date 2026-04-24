@@ -9,16 +9,17 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen" style={{ background: "#FDF5E6", fontFamily: "'Zen Maru Gothic', sans-serif", overflowX: "hidden" }}>
 
-      {/* ── 背景装飾 ── */}
+      {/* 背景装飾 */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", background: "rgba(255,183,178,0.12)", filter: "blur(60px)" }}/>
-        <div style={{ position: "absolute", bottom: 100, left: -100, width: 500, height: 500, borderRadius: "50%", background: "rgba(178,226,242,0.1)", filter: "blur(80px)" }}/>
-        <div style={{ position: "absolute", top: "40%", right: "15%", width: 300, height: 300, borderRadius: "50%", background: "rgba(209,232,226,0.1)", filter: "blur(60px)" }}/>
+        <div style={{ position: "absolute", top: -100, right: -80, width: 420, height: 420, borderRadius: "50%", background: "rgba(255,183,178,0.13)", filter: "blur(70px)" }}/>
+        <div style={{ position: "absolute", bottom: 80, left: -100, width: 480, height: 480, borderRadius: "50%", background: "rgba(178,226,242,0.11)", filter: "blur(80px)" }}/>
+        <div style={{ position: "absolute", top: "45%", right: "10%", width: 320, height: 320, borderRadius: "50%", background: "rgba(209,232,226,0.1)", filter: "blur(60px)" }}/>
+        <div style={{ position: "absolute", top: "20%", left: "8%", width: 260, height: 260, borderRadius: "50%", background: "rgba(255,220,180,0.09)", filter: "blur(60px)" }}/>
       </div>
 
-      {/* ── Header ── */}
+      {/* Header */}
       <header style={{ position: "relative", zIndex: 10, padding: "28px 0" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "'Noto Serif JP', serif", fontWeight: 700, fontSize: 22, color: "#4A4A4A" }}>
             <LeafLogo />
             ことのは
@@ -42,12 +43,12 @@ export default async function HomePage() {
         </div>
       </header>
 
-      {/* ── Hero ── */}
+      {/* Hero */}
       <section style={{ position: "relative", zIndex: 10, padding: "72px 0 80px", textAlign: "center" }}>
-        <div style={{ maxWidth: 780, margin: "0 auto", padding: "0 40px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 40px" }}>
 
           {/* バッジ */}
-          <div style={{ marginBottom: 32 }}>
+          <div style={{ marginBottom: 36 }}>
             <span style={{
               display: "inline-flex",
               alignItems: "center",
@@ -65,14 +66,14 @@ export default async function HomePage() {
             </span>
           </div>
 
-          {/* メインタイトル */}
+          {/* タイトル */}
           <h1 style={{
             fontFamily: "'Noto Serif JP', serif",
             fontWeight: 700,
-            fontSize: "clamp(52px, 7vw, 88px)",
-            lineHeight: 1.25,
+            fontSize: "clamp(48px, 6.5vw, 84px)",
+            lineHeight: 1.3,
             color: "#3A3A3A",
-            marginBottom: 28,
+            marginBottom: 32,
             letterSpacing: "-0.01em",
           }}>
             先週のメモが、<br />
@@ -81,25 +82,24 @@ export default async function HomePage() {
 
           {/* サブコピー */}
           <p style={{
-            fontSize: "clamp(15px, 1.8vw, 18px)",
+            fontSize: "clamp(15px, 1.7vw, 17px)",
             color: "#7A7A7A",
-            lineHeight: 1.9,
-            marginBottom: 44,
-            maxWidth: 560,
-            margin: "0 auto 44px",
+            lineHeight: 2.0,
+            maxWidth: 540,
+            margin: "0 auto 48px",
           }}>
             「今日、○○ちゃんが転んで泣いた」——そのメモで十分。<br />
             AIが保育指針に沿った週案を自動で仕上げます。
           </p>
 
-          {/* CTA */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 56, flexWrap: "wrap" }}>
+          {/* CTA ボタン */}
+          <div style={{ marginBottom: 16 }}>
             <Link
               href="/login"
               style={{
                 background: "#FFB7B2",
                 color: "white",
-                padding: "18px 44px",
+                padding: "18px 52px",
                 borderRadius: 50,
                 fontSize: 18,
                 fontWeight: 700,
@@ -107,31 +107,36 @@ export default async function HomePage() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 10,
-                boxShadow: "0 6px 20px rgba(255,183,178,0.45)",
+                boxShadow: "0 6px 24px rgba(255,183,178,0.45)",
                 letterSpacing: "0.02em",
               }}
             >
               無料で始める
               <span style={{ fontSize: 20 }}>→</span>
             </Link>
-            <span style={{ fontSize: 12, color: "#B0A0A0" }}>登録無料・クレジットカード不要</span>
           </div>
+          <p style={{ fontSize: 12, color: "#B0A0A0", marginBottom: 64 }}>登録無料・クレジットカード不要</p>
 
           {/* ステップ */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0, flexWrap: "wrap" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}>
             {[
               { step: "1", text: "様子をメモ" },
               { step: "2", text: "AIが週案に変換" },
               { step: "3", text: "すぐ提出" },
             ].map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center" }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "0 24px" }}>
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 96 }}>
                   <span style={{
                     fontFamily: "'Noto Serif JP', serif",
-                    fontSize: 38,
+                    fontSize: 36,
                     color: "#FFCDCB",
                     lineHeight: 1,
-                    marginBottom: 4,
+                    marginBottom: 6,
                     fontWeight: 700,
                   }}>
                     {item.step}
@@ -139,7 +144,7 @@ export default async function HomePage() {
                   <span style={{ fontSize: 13, color: "#9A8A8A", whiteSpace: "nowrap" }}>{item.text}</span>
                 </div>
                 {i < 2 && (
-                  <span style={{ color: "#D8CECE", fontSize: 20, flexShrink: 0 }}>→</span>
+                  <span style={{ color: "#D8CECE", fontSize: 22, flexShrink: 0, marginBottom: 24 }}>→</span>
                 )}
               </div>
             ))}
@@ -147,9 +152,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── アプリUI プレビューカード ── */}
+      {/* アプリUI プレビューカード */}
       <section style={{ position: "relative", zIndex: 10, padding: "0 40px 100px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <div style={{
             background: "rgba(255,255,255,0.85)",
             backdropFilter: "blur(16px)",
@@ -159,7 +164,7 @@ export default async function HomePage() {
             border: "1px solid rgba(255,255,255,0.9)",
             overflow: "hidden",
           }}>
-            {/* カードヘッダー */}
+            {/* ウィンドウバー */}
             <div style={{
               background: "rgba(255,183,178,0.08)",
               borderBottom: "1px solid rgba(255,183,178,0.15)",
@@ -176,10 +181,9 @@ export default async function HomePage() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 320 }}>
               {/* 左：チャット */}
-              <div style={{ padding: "28px 24px", borderRight: "1px solid rgba(255,183,178,0.12)" }}>
-                <p style={{ fontSize: 11, color: "#C4B4A4", marginBottom: 16, letterSpacing: "0.06em", fontWeight: 600 }}>AIとの対話</p>
+              <div style={{ padding: "28px 32px", borderRight: "1px solid rgba(255,183,178,0.12)" }}>
+                <p style={{ fontSize: 11, color: "#C4B4A4", marginBottom: 18, letterSpacing: "0.06em", fontWeight: 600 }}>AIとの対話</p>
 
-                {/* AI質問 */}
                 <div style={{
                   background: "rgba(255,255,255,0.8)",
                   border: "1px solid rgba(255,255,255,0.9)",
@@ -187,30 +191,28 @@ export default async function HomePage() {
                   padding: "12px 16px",
                   fontSize: 13,
                   color: "#4A4A4A",
-                  lineHeight: 1.7,
+                  lineHeight: 1.75,
                   marginBottom: 12,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 }}>
                   先週、子どもたちはどんな遊びや活動をしていましたか？印象に残った場面を教えてください。
                 </div>
 
-                {/* ユーザー返答 */}
                 <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
                   <div style={{
                     background: "linear-gradient(135deg, #FFB7B2, #ffcac6)",
                     borderRadius: 14,
                     padding: "12px 16px",
                     fontSize: 13,
-                    color: "#4A4A4A",
-                    lineHeight: 1.7,
-                    maxWidth: "80%",
+                    color: "#fff",
+                    lineHeight: 1.75,
+                    maxWidth: "82%",
                     boxShadow: "0 2px 8px rgba(255,183,178,0.3)",
                   }}>
                     砂場で水遊びを楽しんでいました。友達と山を作ったり、川を作ったりしていました。
                   </div>
                 </div>
 
-                {/* AI深掘り */}
                 <div style={{
                   background: "rgba(255,255,255,0.8)",
                   border: "1px solid rgba(255,255,255,0.9)",
@@ -218,7 +220,7 @@ export default async function HomePage() {
                   padding: "12px 16px",
                   fontSize: 13,
                   color: "#4A4A4A",
-                  lineHeight: 1.7,
+                  lineHeight: 1.75,
                   boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 }}>
                   素敵な場面ですね。そのとき子どもたちはどんな言葉をかけ合っていましたか？
@@ -226,8 +228,8 @@ export default async function HomePage() {
               </div>
 
               {/* 右：週案プレビュー */}
-              <div style={{ padding: "28px 24px" }}>
-                <p style={{ fontSize: 11, color: "#C4B4A4", marginBottom: 16, letterSpacing: "0.06em", fontWeight: 600 }}>生成された週案</p>
+              <div style={{ padding: "28px 32px" }}>
+                <p style={{ fontSize: 11, color: "#C4B4A4", marginBottom: 18, letterSpacing: "0.06em", fontWeight: 600 }}>生成された週案</p>
 
                 {[
                   {
@@ -246,12 +248,12 @@ export default async function HomePage() {
                     content: "・子どもの言葉に耳を傾け、気持ちを代弁しながら関わりを見守る",
                   },
                 ].map((item, i) => (
-                  <div key={i} style={{ marginBottom: 14 }}>
+                  <div key={i} style={{ marginBottom: 16 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
                       <div style={{ width: 8, height: 8, borderRadius: 2, background: item.color, flexShrink: 0 }}/>
                       <span style={{ fontSize: 11, fontWeight: 600, color: "#6A5A4A", letterSpacing: "0.04em" }}>{item.label}</span>
                     </div>
-                    <p style={{ fontSize: 12, color: "#7A7A7A", lineHeight: 1.75, paddingLeft: 14 }}>{item.content}</p>
+                    <p style={{ fontSize: 12, color: "#7A7A7A", lineHeight: 1.8, paddingLeft: 14 }}>{item.content}</p>
                   </div>
                 ))}
 
@@ -273,13 +275,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
+      {/* Features */}
       <section style={{ position: "relative", zIndex: 10, padding: "0 40px 120px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <p style={{
             textAlign: "center",
             fontFamily: "'Noto Serif JP', serif",
-            fontSize: "clamp(22px, 3vw, 30px)",
+            fontSize: "clamp(20px, 2.6vw, 28px)",
             fontWeight: 700,
             color: "#4A4A4A",
             marginBottom: 48,
@@ -287,7 +289,7 @@ export default async function HomePage() {
           }}>
             保育士さんの「ちょうどいい」を目指して
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
             {[
               {
                 icon: <GuidanceIcon />,
@@ -336,7 +338,7 @@ export default async function HomePage() {
                 }}>
                   {f.icon}
                 </div>
-                <h3 style={{ fontFamily: "'Noto Serif JP', serif", fontWeight: 700, fontSize: 18, marginBottom: 12, color: "#4A4A4A" }}>
+                <h3 style={{ fontFamily: "'Noto Serif JP', serif", fontWeight: 700, fontSize: 17, marginBottom: 12, color: "#4A4A4A" }}>
                   {f.title}
                 </h3>
                 <p style={{ fontSize: 14, lineHeight: 1.85, color: "#7A7A7A" }}>{f.desc}</p>
@@ -346,16 +348,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA bottom ── */}
+      {/* CTA bottom */}
       <section style={{ position: "relative", zIndex: 10, padding: "80px 40px 100px", textAlign: "center" }}>
-        <div style={{ maxWidth: 560, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <h2 style={{
             fontFamily: "'Noto Serif JP', serif",
             fontWeight: 700,
-            fontSize: "clamp(26px, 3.5vw, 40px)",
+            fontSize: "clamp(26px, 3.2vw, 38px)",
             color: "#4A4A4A",
             marginBottom: 20,
-            lineHeight: 1.45,
+            lineHeight: 1.5,
           }}>
             今日の記録が、<br />明日の保育になる。
           </h2>
@@ -383,7 +385,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <footer style={{ position: "relative", zIndex: 10, background: "#384D48", color: "white", padding: "48px 40px", textAlign: "center" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 10 }}>
           <LeafLogo />
