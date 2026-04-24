@@ -224,10 +224,20 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
           </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {/* Header fields */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-3">
+          {/* Header fields — dim when a content field is focused */}
           {headerFields.length > 0 && (
-            <div className="rounded-2xl p-4 space-y-3" style={{ background: "rgba(209,232,226,0.15)", border: "1px solid rgba(209,232,226,0.4)" }}>
+            <div
+              className="rounded-2xl p-4 space-y-3"
+              style={{
+                background: "rgba(209,232,226,0.15)",
+                border: "1px solid rgba(209,232,226,0.4)",
+                transition: "opacity 0.25s, filter 0.25s",
+                opacity: focusedField ? 0.3 : 1,
+                filter: focusedField ? "blur(1.5px)" : "none",
+                pointerEvents: focusedField ? "none" : "auto",
+              }}
+            >
               {headerFields.map(slug => (
                 <div key={slug}>
                   <label className="block text-xs font-medium mb-1" style={{ color: "#9A8878", letterSpacing: "0.05em" }}>
@@ -246,25 +256,41 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
             </div>
           )}
 
-          {/* Content fields — clicking triggers AI */}
+          {/* Content fields — spotlight effect on focus */}
           {contentFields.map(slug => {
             const isFocused = focusedField === slug;
+            const isDimmed = focusedField !== null && !isFocused;
             return (
               <div
                 key={slug}
-                className="rounded-xl transition-all"
+                className="rounded-2xl"
                 style={{
-                  padding: "10px 12px",
-                  background: isFocused ? "rgba(255,183,178,0.07)" : "transparent",
-                  border: isFocused ? "1px solid rgba(255,183,178,0.35)" : "1px solid transparent",
+                  padding: "14px 16px",
+                  background: isFocused ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.5)",
+                  border: isFocused ? "1.5px solid rgba(255,183,178,0.5)" : "1px solid rgba(255,255,255,0.7)",
+                  boxShadow: isFocused ? "0 8px 32px rgba(255,183,178,0.25), 0 2px 8px rgba(0,0,0,0.06)" : "none",
+                  transform: isFocused ? "scale(1.02)" : isDimmed ? "scale(0.98)" : "scale(1)",
+                  opacity: isDimmed ? 0.3 : 1,
+                  filter: isDimmed ? "blur(1.5px)" : "none",
+                  transition: "all 0.25s cubic-bezier(0.4,0,0.2,1)",
+                  cursor: isDimmed ? "pointer" : "default",
+                  zIndex: isFocused ? 2 : 1,
+                  position: "relative",
                 }}
+                onClick={() => { if (isDimmed) handleFieldFocus(slug); }}
               >
-                <div className="flex items-center justify-between mb-0.5">
-                  <label className="block text-sm font-medium" style={{ color: "#4A4A4A" }}>
+                <div className="flex items-center justify-between mb-1">
+                  <label
+                    className="block text-sm font-medium"
+                    style={{ color: isFocused ? "#3A3A3A" : "#4A4A4A", letterSpacing: isFocused ? "0.02em" : undefined }}
+                  >
                     {FIELD_DEFINITIONS[slug].label}
                   </label>
                   {isFocused && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(255,183,178,0.2)", color: "#C07060" }}>
+                    <span
+                      className="text-[10px] px-2.5 py-0.5 rounded-full font-medium"
+                      style={{ background: "linear-gradient(135deg, #FFB7B2, #ffcac6)", color: "#4A4A4A" }}
+                    >
                       AI対話中
                     </span>
                   )}
@@ -276,7 +302,7 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
                   value={fields[slug] ?? ""}
                   onChange={e => handleFieldChange(slug, e.target.value)}
                   onFocus={() => handleFieldFocus(slug)}
-                  rows={4}
+                  rows={isFocused ? 5 : 3}
                   style={{
                     width: "100%",
                     fontSize: "0.875rem",
@@ -287,8 +313,8 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
                     resize: "none",
                     color: "#4A4A4A",
                     padding: "8px 4px",
-                    lineHeight: "1.6",
-                    transition: "border-color 0.15s",
+                    lineHeight: "1.7",
+                    transition: "border-color 0.2s, height 0.25s",
                   }}
                   placeholder={`${FIELD_DEFINITIONS[slug].label}を入力…`}
                 />
