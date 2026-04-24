@@ -1,3 +1,8 @@
+export interface FieldLayoutItem {
+  slug: FieldSlug;
+  colSpan: 1 | 2 | 3 | 4;
+}
+
 export type FieldSlug =
   | "class_name" | "week_date" | "teacher_name" | "enrollment_count" | "month_plan_week"
   | "prev_week_observation" | "weekly_goal" | "activities"

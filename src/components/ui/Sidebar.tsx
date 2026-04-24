@@ -21,7 +21,7 @@ const navItems = [
   { href: "/plans",          label: "ホーム",         icon: "home" },
   { href: "/weekly-plan/new", label: "週案を作る",     icon: "pen", primary: true },
   { href: "/community",      label: "コミュニティ",   icon: "leaf" },
-  { href: "/onboarding",     label: "フォーマット設定", icon: "file" },
+  { href: "/settings/format", label: "フォーマット設定", icon: "file" },
   { href: "/profile",        label: "マイページ",     icon: "user" },
 ];
 
