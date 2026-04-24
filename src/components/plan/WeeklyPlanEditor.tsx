@@ -57,7 +57,11 @@ function parseProposal(content: string): { fieldLabel: string; text: string } | 
 }
 
 function findSlugByLabel(label: string): FieldSlug | null {
-  const entry = Object.entries(FIELD_DEFINITIONS).find(([, def]) => def.label === label);
+  // Strip leading number prefix like "1. " if the AI accidentally adds it
+  const stripped = label.replace(/^\d+\.\s*/, "").trim();
+  const entry = Object.entries(FIELD_DEFINITIONS).find(
+    ([, def]) => def.label === stripped || def.label === label
+  );
   return entry ? (entry[0] as FieldSlug) : null;
 }
 
@@ -185,9 +189,13 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
   }, [streaming, focusedField]);
 
   const adoptProposal = async (fieldLabel: string, text: string) => {
-    const slug = findSlugByLabel(fieldLabel);
+    // Try exact/stripped label match; fall back to currently focused field
+    const slug = findSlugByLabel(fieldLabel) ?? focusedField;
     if (!slug) return;
-    const updated = { ...fields, [slug]: text };
+    const current = fields[slug] ?? "";
+    // Append to existing content (with separator) rather than overwrite if already has content
+    const next = current.trim() ? `${current.trim()}\n${text}` : text;
+    const updated = { ...fields, [slug]: next };
     setFields(updated);
     await updateWeeklyPlanFields(planId, updated);
   };
