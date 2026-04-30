@@ -15,6 +15,42 @@ const TABS = [
   { id: "nursery_infant",    label: "0〜2歳" },
   { id: "nursery_preschool", label: "3〜5歳" },
   { id: "chapters",          label: "目次" },
+  { id: "reference",         label: "参考文書" },
+]
+
+const REFERENCE_LINKS = [
+  {
+    category: "保育所保育指針",
+    color: "#FFB7B2",
+    links: [
+      { label: "保育所保育指針（全文 PDF）", sub: "厚生労働省 / 平成29年告示", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000160000.pdf" },
+      { label: "保育所保育指針 解説", sub: "厚生労働省 / 平成30年発行", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000202211.pdf" },
+      { label: "保育所保育指針 関連情報ページ", sub: "厚生労働省 公式ウェブサイト", url: "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kodomo/kodomo_kosodate/hoiku_doukou/hoikusho_hoiku.html" },
+    ],
+  },
+  {
+    category: "幼稚園教育要領",
+    color: "#B2E2F2",
+    links: [
+      { label: "幼稚園教育要領（全文 PDF）", sub: "文部科学省 / 平成29年告示", url: "https://www.mext.go.jp/content/1384661_3_2.pdf" },
+      { label: "幼稚園教育要領 解説", sub: "文部科学省 / フレーベル館", url: "https://www.mext.go.jp/a_menu/shotou/new-cs/youryou/you/index.htm" },
+    ],
+  },
+  {
+    category: "幼保連携型認定こども園 教育・保育要領",
+    color: "#D1E8E2",
+    links: [
+      { label: "教育・保育要領（全文 PDF）", sub: "内閣府・文部科学省・厚生労働省 / 平成29年告示", url: "https://www8.cao.go.jp/shoushi/kodomoen/pdf/kokujibun.pdf" },
+    ],
+  },
+  {
+    category: "発達・保育に関する参考資料",
+    color: "#FFE4B2",
+    links: [
+      { label: "保育所における自己評価ガイドライン", sub: "厚生労働省", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000204684.pdf" },
+      { label: "子どもの心の健康に関する資料集", sub: "国立成育医療研究センター", url: "https://www.ncchd.go.jp/kokoro/index.html" },
+    ],
+  },
 ]
 
 export default function GuidelinesPage() {
@@ -114,20 +150,18 @@ export default function GuidelinesPage() {
               </div>
             </Card>
 
-            {/* 外部リンク */}
+            {/* 参考文書への誘導 */}
             <div style={{ background: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,183,178,0.2)", borderRadius: 16, padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: "#4A4A4A", margin: "0 0 4px" }}>全文を確認する</p>
-                <p style={{ fontSize: 12, color: "#9A8A7A", margin: 0 }}>厚生労働省が公開している保育所保育指針の全文（PDF）</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#4A4A4A", margin: "0 0 4px" }}>公式文書を読む</p>
+                <p style={{ fontSize: 12, color: "#9A8A7A", margin: 0 }}>保育指針・教育要領などの公式PDFへのリンク集</p>
               </div>
-              <a
-                href="https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000160000.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#FFB7B2", color: "white", padding: "10px 20px", borderRadius: 50, fontSize: 13, fontWeight: 600, textDecoration: "none", boxShadow: "0 2px 10px rgba(255,183,178,0.35)", whiteSpace: "nowrap" }}
+              <button
+                onClick={() => setActiveTab("reference")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#FFB7B2", color: "white", padding: "10px 20px", borderRadius: 50, fontSize: 13, fontWeight: 600, border: "none", cursor: "pointer", boxShadow: "0 2px 10px rgba(255,183,178,0.35)", whiteSpace: "nowrap" }}
               >
-                PDFを開く →
-              </a>
+                参考文書を見る →
+              </button>
             </div>
           </div>
         )}
@@ -142,6 +176,47 @@ export default function GuidelinesPage() {
                 isOpen={openSection === i}
                 onToggle={() => setOpenSection(openSection === i ? null : i)}
               />
+            ))}
+          </div>
+        )}
+
+        {/* 参考文書タブ */}
+        {activeTab === "reference" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <p style={{ fontSize: 13, color: "#9A8A7A", margin: 0, lineHeight: 1.8 }}>
+              保育所保育指針・幼稚園教育要領などの公式文書へのリンクです。各リンクは外部サイト（PDF）が開きます。
+            </p>
+            {REFERENCE_LINKS.map((cat) => (
+              <div key={cat.category} style={{ background: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,183,178,0.18)", borderRadius: 16, overflow: "hidden" }}>
+                <div style={{ padding: "14px 22px", borderBottom: `1px solid ${cat.color}40`, background: `${cat.color}12`, display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 4, height: 18, borderRadius: 2, background: cat.color }}/>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#4A4A4A", margin: 0, fontFamily: "'Noto Serif JP', serif" }}>{cat.category}</p>
+                </div>
+                <div style={{ padding: "8px 16px" }}>
+                  {cat.links.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 8px", borderBottom: "1px solid rgba(255,183,178,0.1)", textDecoration: "none", gap: 12 }}
+                    >
+                      <div>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: "#4A4A4A", margin: "0 0 3px" }}>{link.label}</p>
+                        <p style={{ fontSize: 12, color: "#9A8A7A", margin: 0 }}>{link.sub}</p>
+                      </div>
+                      <span style={{ flexShrink: 0, fontSize: 13, color: "#B07870", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                        開く
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                          <polyline points="15 3 21 3 21 9"/>
+                          <line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )}
