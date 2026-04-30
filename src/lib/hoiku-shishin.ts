@@ -282,6 +282,190 @@ ${g.considerations.map(c => `・${c}`).join("\n")}`
 ${sections}`
 }
 
+// 幼児期の終わりまでに育てたい10の姿
+// 出典：保育所保育指針・幼稚園教育要領・幼保連携型認定こども園教育・保育要領（平成29年告示）
+export interface JuNoSugata {
+  no: number
+  name: string
+  keyword: string
+  description: string
+  weeklyPlanTips: string[]
+}
+
+export const JU_NO_SUGATA: JuNoSugata[] = [
+  {
+    no: 1,
+    name: "健康な心と体",
+    keyword: "健康・主体性",
+    description: "保育所の生活の中で、充実感をもって自分のやりたいことに向かって心と体を十分に働かせ、見通しをもって行動し、自ら健康で安全な生活をつくり出すようになる。",
+    weeklyPlanTips: [
+      "戸外遊びや体を動かす活動を通じて充実感を積み重ねる",
+      "自分でやりたいことに向かう意欲を大切にした環境構成を計画する",
+      "生活の見通しを持てるよう、一日の流れや活動の切り替えを丁寧に伝える",
+    ],
+  },
+  {
+    no: 2,
+    name: "自立心",
+    keyword: "主体性・達成感",
+    description: "身近な環境に主体的に関わり様々な活動を楽しむ中で、しなければならないことを自覚し、自分の力で行うために考えたり工夫したりしながら、諦めずにやり遂げることで達成感を味わい、自信をもって行動するようになる。",
+    weeklyPlanTips: [
+      "「自分でやってみる」場面を意図的に設定する",
+      "困難があっても諦めずに取り組める適度な難易度の課題を用意する",
+      "やり遂げた経験を価値づけ、次の挑戦につなげる",
+    ],
+  },
+  {
+    no: 3,
+    name: "協同性",
+    keyword: "共同作業・共通目的",
+    description: "友達と関わる中で、互いの思いや考えなどを共有し、共通の目的の実現に向けて考えたり工夫したり協力したりし、充実感をもってやり遂げるようになる。",
+    weeklyPlanTips: [
+      "グループで取り組む制作・ごっこ遊びなど協同活動を計画する",
+      "友達の思いを聞く・伝えるやりとりの場を意識的に設ける",
+      "共通の目的達成後に振り返る時間を設け充実感を共有する",
+    ],
+  },
+  {
+    no: 4,
+    name: "道徳性・規範意識の芽生え",
+    keyword: "善悪・きまり・共感",
+    description: "友達と様々な体験を重ねる中で、してよいことや悪いことが分かり、自分の行動を振り返ったり友達の気持ちに共感したりし、相手の立場に立って行動するようになる。また、きまりを守る必要性が分かり、自分の気持ちを調整し友達と折り合いをつけながら、きまりをつくったり守ったりするようになる。",
+    weeklyPlanTips: [
+      "トラブル場面を学びの機会と捉え、双方の気持ちを丁寧に代弁する",
+      "クラスのきまりを子どもたちと一緒に考える機会を設ける",
+      "「なぜそのきまりがあるか」を考えられるよう問いかけを工夫する",
+    ],
+  },
+  {
+    no: 5,
+    name: "社会生活との関わり",
+    keyword: "地域・公共・情報",
+    description: "家族を大切にしようとする気持ちをもつとともに、地域の身近な人と触れ合う中で人との様々な関わり方に気付き、相手の気持ちを考えて関わり、自分が役に立つ喜びを感じ地域に親しみをもつようになる。また、公共の施設を大切に利用するなど社会とのつながりを意識するようになる。",
+    weeklyPlanTips: [
+      "地域の人との交流・施設見学など社会と接する体験を計画する",
+      "「誰かのために」という気持ちが育つ当番活動や係活動を設ける",
+      "公共物の扱い方や地域のルールについて話し合う機会をつくる",
+    ],
+  },
+  {
+    no: 6,
+    name: "思考力の芽生え",
+    keyword: "試行錯誤・探究・発見",
+    description: "身近な事象に積極的に関わる中で、物の性質や仕組みなどを感じ取ったり気付いたりし、考えたり予想したり工夫したりするなど多様な関わりを楽しむようになる。また、友達の様々な考えに触れる中で自分と異なる考えがあることに気付き、新しい考えを生み出す喜びを味わいながら自分の考えをよりよいものにするようになる。",
+    weeklyPlanTips: [
+      "「なぜ？」「どうすれば？」と問いかけ、子どもの試行錯誤を見守る",
+      "理科的な実験や自然観察を取り入れ、発見を言語化する機会をつくる",
+      "友達の考えを聞いて自分の考えと比べる話し合いの場を設ける",
+    ],
+  },
+  {
+    no: 7,
+    name: "自然との関わり・生命尊重",
+    keyword: "自然・命・好奇心",
+    description: "自然に触れて感動する体験を通して、自然の変化などを感じ取り、好奇心や探究心をもって考え言葉などで表現しながら、自然との関わりを深めるようになる。また、身近な動植物に心を動かされる中で、生命の不思議さや尊さに気付き、命あるものとしていたわり大切にする気持ちをもって関わるようになる。",
+    weeklyPlanTips: [
+      "季節の自然物（葉・虫・雪など）に触れる戸外活動を計画する",
+      "飼育・栽培活動を通じて命の変化や尊さを感じる機会を設ける",
+      "子どもの自然への驚き・疑問を大切にし、言葉にする場をつくる",
+    ],
+  },
+  {
+    no: 8,
+    name: "数量や図形、標識や文字などへの関心・感覚",
+    keyword: "数・形・文字・記号",
+    description: "遊びや生活の中で、数量や図形、標識や文字などに親しむ体験を重ねたり、標識や文字の役割に気付いたりし、自らの必要感に基づきこれらを活用し、興味・関心・感覚をもつようになる。",
+    weeklyPlanTips: [
+      "お店屋さんごっこ・カード遊びなど数や文字が自然に現れる環境を整える",
+      "生活の中の標識・数・形に子どもが気づけるよう問いかける",
+      "必要感から文字・数を使う体験（手紙・カレンダー・数え歌）を設定する",
+    ],
+  },
+  {
+    no: 9,
+    name: "言葉による伝え合い",
+    keyword: "表現・対話・傾聴",
+    description: "保育士等や友達と心を通わせる中で、絵本や物語などに親しみながら豊かな言葉や表現を身に付け、経験したことや考えたことなどを言葉で伝えたり、相手の話を注意して聞いたりし、言葉による伝え合いを楽しむようになる。",
+    weeklyPlanTips: [
+      "絵本・物語の読み聞かせを週案に組み込み、豊かな言語体験を積む",
+      "朝の会・帰りの会などで経験を言葉で振り返る時間を設ける",
+      "友達の話をしっかり聞く態度を育てるペアトークや発表の場をつくる",
+    ],
+  },
+  {
+    no: 10,
+    name: "豊かな感性と表現",
+    keyword: "感動・創造・美",
+    description: "心を動かす出来事などに触れ感性を働かせる中で、様々な素材の特徴や表現の仕方などに気付き、感じたことや考えたことを自分で表現したり、友達同士で表現する過程を楽しんだりし、表現する喜びを味わい意欲をもつようになる。",
+    weeklyPlanTips: [
+      "多様な素材（紙・粘土・布・自然物）を使った自由制作の機会を設ける",
+      "音楽・身体表現・絵など様々な表現方法を体験できる活動を計画する",
+      "「上手・下手」でなく「どう感じたか・どう表したかったか」を大切にする",
+    ],
+  },
+]
+
+// 10の姿をAIプロンプト用にまとめる
+export function buildJuNoSugataReference(): string {
+  return `【幼児期の終わりまでに育てたい10の姿（共通）】
+保育所保育指針・幼稚園教育要領・認定こども園教育・保育要領（平成29年告示）で示された、小学校就学前までに育てたい姿。週案のねらいや援助を考える際の参照軸として活用する。
+
+${JU_NO_SUGATA.map(s =>
+  `(${s.no}) ${s.name}【${s.keyword}】\n${s.description}`
+).join("\n\n")}`
+}
+
+// 参考文書リンクデータ
+export interface ReferenceLink {
+  label: string
+  sub: string
+  url: string
+}
+export interface ReferenceCategory {
+  category: string
+  color: string
+  links: ReferenceLink[]
+}
+
+export const REFERENCE_CATEGORIES: ReferenceCategory[] = [
+  {
+    category: "保育所保育指針",
+    color: "#FFB7B2",
+    links: [
+      { label: "保育所保育指針（全文 PDF）", sub: "厚生労働省 / 平成29年告示", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000160000.pdf" },
+      { label: "保育所保育指針 解説（全文 PDF）", sub: "厚生労働省 / 平成30年発行", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000202211.pdf" },
+      { label: "保育所保育指針 関連情報ページ", sub: "厚生労働省 公式ウェブサイト", url: "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kodomo/kodomo_kosodate/hoiku_doukou/hoikusho_hoiku.html" },
+    ],
+  },
+  {
+    category: "幼稚園教育要領",
+    color: "#B2E2F2",
+    links: [
+      { label: "幼稚園教育要領（全文 PDF）", sub: "文部科学省 / 平成29年告示", url: "https://www.mext.go.jp/content/1384661_3_2.pdf" },
+      { label: "幼稚園教育要領 解説（全文 PDF）", sub: "文部科学省 / 平成30年発行", url: "https://www.mext.go.jp/content/1384661_3_3.pdf" },
+      { label: "幼稚園教育要領 関連情報ページ", sub: "文部科学省 公式ウェブサイト", url: "https://www.mext.go.jp/a_menu/shotou/new-cs/youryou/you/index.htm" },
+    ],
+  },
+  {
+    category: "幼保連携型認定こども園 教育・保育要領",
+    color: "#D1E8E2",
+    links: [
+      { label: "教育・保育要領（全文 PDF）", sub: "内閣府・文部科学省・厚生労働省 / 平成29年告示", url: "https://www8.cao.go.jp/shoushi/kodomoen/pdf/kokujibun.pdf" },
+      { label: "教育・保育要領 解説（全文 PDF）", sub: "内閣府 / 平成30年発行", url: "https://www8.cao.go.jp/shoushi/kodomoen/pdf/youryou_kaisetsu.pdf" },
+      { label: "認定こども園 関連情報ページ", sub: "内閣府 公式ウェブサイト", url: "https://www8.cao.go.jp/shoushi/kodomoen/index.html" },
+    ],
+  },
+  {
+    category: "発達・保育に関する参考資料",
+    color: "#FFE4B2",
+    links: [
+      { label: "保育所における自己評価ガイドライン（PDF）", sub: "厚生労働省 / 2020年改訂版", url: "https://www.mhlw.go.jp/content/000609915.pdf" },
+      { label: "幼児期運動指針（PDF）", sub: "文部科学省", url: "https://www.mext.go.jp/a_menu/sports/undousisin/1319771.htm" },
+      { label: "子どもの心の健康に関する資料", sub: "国立成育医療研究センター", url: "https://www.ncchd.go.jp/kokoro/index.html" },
+    ],
+  },
+]
+
 // 全章の目次データ
 export const GUIDELINE_CHAPTERS: { chapter: number; title: string; description: string }[] = [
   { chapter: 1,  title: "総則",                  description: "保育の原理・目標・方法・環境、保育内容構成の基本方針" },

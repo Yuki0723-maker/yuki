@@ -1,61 +1,25 @@
 "use client"
 
 import { useState } from "react"
-import { AGE_GUIDELINES, GO_RYOUIKI, HOIKU_MOKUHYO, GUIDELINE_CHAPTERS, type AgeGroupGuideline } from "@/lib/hoiku-shishin"
-
-const TAB_COLORS: Record<string, { bg: string; border: string; color: string; dot: string }> = {
-  "nursery_infant":    { bg: "rgba(255,183,178,0.12)", border: "rgba(255,183,178,0.4)", color: "#B07870", dot: "#FFB7B2" },
-  "nursery_preschool": { bg: "rgba(178,226,242,0.12)", border: "rgba(140,200,228,0.4)", color: "#4A80A0", dot: "#B2E2F2" },
-  "kindergarten":      { bg: "rgba(209,232,226,0.15)", border: "rgba(160,210,185,0.4)", color: "#4A8070", dot: "#D1E8E2" },
-  "combined":          { bg: "rgba(255,220,180,0.15)", border: "rgba(220,180,120,0.4)", color: "#8A6A30", dot: "#FFD4A0" },
-}
+import {
+  AGE_GUIDELINES, GO_RYOUIKI, HOIKU_MOKUHYO, GUIDELINE_CHAPTERS,
+  JU_NO_SUGATA, REFERENCE_CATEGORIES,
+  type AgeGroupGuideline,
+} from "@/lib/hoiku-shishin"
 
 const TABS = [
   { id: "overview",          label: "概要・目標" },
+  { id: "ju_no_sugata",      label: "10の姿" },
   { id: "nursery_infant",    label: "0〜2歳" },
   { id: "nursery_preschool", label: "3〜5歳" },
-  { id: "chapters",          label: "目次" },
   { id: "reference",         label: "参考文書" },
-]
-
-const REFERENCE_LINKS = [
-  {
-    category: "保育所保育指針",
-    color: "#FFB7B2",
-    links: [
-      { label: "保育所保育指針（全文 PDF）", sub: "厚生労働省 / 平成29年告示", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000160000.pdf" },
-      { label: "保育所保育指針 解説", sub: "厚生労働省 / 平成30年発行", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000202211.pdf" },
-      { label: "保育所保育指針 関連情報ページ", sub: "厚生労働省 公式ウェブサイト", url: "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kodomo/kodomo_kosodate/hoiku_doukou/hoikusho_hoiku.html" },
-    ],
-  },
-  {
-    category: "幼稚園教育要領",
-    color: "#B2E2F2",
-    links: [
-      { label: "幼稚園教育要領（全文 PDF）", sub: "文部科学省 / 平成29年告示", url: "https://www.mext.go.jp/content/1384661_3_2.pdf" },
-      { label: "幼稚園教育要領 解説", sub: "文部科学省 / フレーベル館", url: "https://www.mext.go.jp/a_menu/shotou/new-cs/youryou/you/index.htm" },
-    ],
-  },
-  {
-    category: "幼保連携型認定こども園 教育・保育要領",
-    color: "#D1E8E2",
-    links: [
-      { label: "教育・保育要領（全文 PDF）", sub: "内閣府・文部科学省・厚生労働省 / 平成29年告示", url: "https://www8.cao.go.jp/shoushi/kodomoen/pdf/kokujibun.pdf" },
-    ],
-  },
-  {
-    category: "発達・保育に関する参考資料",
-    color: "#FFE4B2",
-    links: [
-      { label: "保育所における自己評価ガイドライン", sub: "厚生労働省", url: "https://www.mhlw.go.jp/file/06-Seisakujouhou-11900000-Koyoukintoujidoukateikyoku/0000204684.pdf" },
-      { label: "子どもの心の健康に関する資料集", sub: "国立成育医療研究センター", url: "https://www.ncchd.go.jp/kokoro/index.html" },
-    ],
-  },
+  { id: "chapters",          label: "目次" },
 ]
 
 export default function GuidelinesPage() {
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab]     = useState("overview")
   const [openSection, setOpenSection] = useState<number | null>(null)
+  const [openSugata, setOpenSugata]   = useState<number | null>(null)
 
   const ageGroups = AGE_GUIDELINES.filter(g =>
     activeTab === "nursery_infant"
@@ -86,16 +50,16 @@ export default function GuidelinesPage() {
         </p>
       </div>
 
-      <div style={{ padding: "24px 32px", maxWidth: 900, margin: "0 auto" }}>
+      <div style={{ padding: "24px 32px", maxWidth: 920, margin: "0 auto" }}>
 
         {/* タブ */}
         <div style={{ display: "flex", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => { setActiveTab(tab.id); setOpenSection(null); setOpenSugata(null) }}
               style={{
-                padding: "8px 20px",
+                padding: "8px 18px",
                 borderRadius: 50,
                 fontSize: 13,
                 fontWeight: 600,
@@ -111,11 +75,9 @@ export default function GuidelinesPage() {
           ))}
         </div>
 
-        {/* 概要・目標タブ */}
+        {/* ── 概要・目標 ── */}
         {activeTab === "overview" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-
-            {/* 保育の目標 */}
             <Card title="保育の目標（第1章）" accentColor="#FFB7B2">
               <p style={{ fontSize: 13, color: "#7A6A5A", lineHeight: 1.8, marginBottom: 16 }}>
                 子どもが現在を最もよく生き、望ましい未来をつくり出す力の基礎を培うことが保育の目標です。
@@ -124,7 +86,7 @@ export default function GuidelinesPage() {
                 {HOIKU_MOKUHYO.map((item, i) => (
                   <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                     <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: "50%", background: "rgba(255,183,178,0.2)", border: "1px solid rgba(255,183,178,0.4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#B07870", fontWeight: 700 }}>
-                      {String.fromCharCode(0x30A2 + i * 2)}
+                      {["ア","イ","ウ","エ","オ","カ"][i]}
                     </span>
                     <p style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.75, margin: 0 }}>{item}</p>
                   </div>
@@ -132,7 +94,6 @@ export default function GuidelinesPage() {
               </div>
             </Card>
 
-            {/* 5領域 */}
             <Card title="保育の5領域" accentColor="#B2E2F2">
               <p style={{ fontSize: 13, color: "#7A6A5A", lineHeight: 1.8, marginBottom: 16 }}>
                 3歳以上児は5領域を意識しながら保育を展開します。（3歳未満児は各領域を明確に区分せず総合的に展開）
@@ -150,11 +111,25 @@ export default function GuidelinesPage() {
               </div>
             </Card>
 
+            {/* 10の姿への誘導 */}
+            <div style={{ background: "rgba(255,255,255,0.8)", border: "1px solid rgba(209,232,226,0.4)", borderRadius: 16, padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#4A4A4A", margin: "0 0 4px" }}>幼児期の終わりまでに育てたい10の姿</p>
+                <p style={{ fontSize: 12, color: "#9A8A7A", margin: 0 }}>就学前に育てたい10の姿と週案作成のヒント</p>
+              </div>
+              <button
+                onClick={() => setActiveTab("ju_no_sugata")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#D1E8E2", color: "#4A8070", padding: "10px 20px", borderRadius: 50, fontSize: 13, fontWeight: 600, border: "none", cursor: "pointer", whiteSpace: "nowrap" }}
+              >
+                10の姿を見る →
+              </button>
+            </div>
+
             {/* 参考文書への誘導 */}
             <div style={{ background: "rgba(255,255,255,0.8)", border: "1px solid rgba(255,183,178,0.2)", borderRadius: 16, padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: "#4A4A4A", margin: "0 0 4px" }}>公式文書を読む</p>
-                <p style={{ fontSize: 12, color: "#9A8A7A", margin: 0 }}>保育指針・教育要領などの公式PDFへのリンク集</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: "#4A4A4A", margin: "0 0 4px" }}>公式文書・解説を読む</p>
+                <p style={{ fontSize: 12, color: "#9A8A7A", margin: 0 }}>保育指針・教育要領・解説書などの公式PDFリンク集</p>
               </div>
               <button
                 onClick={() => setActiveTab("reference")}
@@ -166,7 +141,57 @@ export default function GuidelinesPage() {
           </div>
         )}
 
-        {/* 年齢別タブ */}
+        {/* ── 10の姿 ── */}
+        {activeTab === "ju_no_sugata" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ background: "rgba(209,232,226,0.2)", border: "1px solid rgba(160,210,185,0.3)", borderRadius: 14, padding: "16px 20px", marginBottom: 4 }}>
+              <p style={{ fontSize: 13, color: "#5A8070", lineHeight: 1.8, margin: 0 }}>
+                保育所保育指針・幼稚園教育要領・幼保連携型認定こども園教育・保育要領（平成29年告示）で共通して示された、<strong>小学校就学前までに育てたい子どもの姿</strong>です。到達目標ではなく、保育の方向性を示すものとして活用します。
+              </p>
+            </div>
+            {JU_NO_SUGATA.map((s, i) => (
+              <div key={s.no} style={{ background: "rgba(255,255,255,0.85)", border: "1px solid rgba(209,232,226,0.3)", borderRadius: 16, overflow: "hidden" }}>
+                <button
+                  onClick={() => setOpenSugata(openSugata === i ? null : i)}
+                  style={{ width: "100%", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", textAlign: "left", gap: 12 }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ flexShrink: 0, width: 36, height: 36, borderRadius: "50%", background: "rgba(209,232,226,0.4)", border: "1px solid rgba(160,210,185,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Noto Serif JP', serif", fontSize: 15, fontWeight: 700, color: "#4A8070" }}>
+                      {s.no}
+                    </span>
+                    <div>
+                      <p style={{ fontSize: 15, fontWeight: 700, color: "#3A3A3A", margin: "0 0 2px", fontFamily: "'Noto Serif JP', serif" }}>{s.name}</p>
+                      <span style={{ fontSize: 11, color: "#7ABCAA", background: "rgba(122,188,170,0.12)", border: "1px solid rgba(122,188,170,0.3)", padding: "2px 8px", borderRadius: 10 }}>{s.keyword}</span>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 18, color: "#C4A898", transform: openSugata === i ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s", flexShrink: 0 }}>▾</span>
+                </button>
+
+                {openSugata === i && (
+                  <div style={{ padding: "0 20px 20px", borderTop: "1px solid rgba(209,232,226,0.3)" }}>
+                    <div style={{ marginTop: 16, marginBottom: 16 }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#5A8070", margin: "0 0 8px", letterSpacing: "0.04em" }}>定義</p>
+                      <p style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.85, margin: 0 }}>{s.description}</p>
+                    </div>
+                    <div style={{ background: "rgba(209,232,226,0.15)", border: "1px solid rgba(160,210,185,0.25)", borderRadius: 10, padding: "14px 16px" }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#5A8070", margin: "0 0 10px", letterSpacing: "0.04em" }}>週案作成のヒント</p>
+                      <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
+                        {s.weeklyPlanTips.map((tip, j) => (
+                          <li key={j} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                            <span style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: "#7ABCAA", marginTop: 7 }}/>
+                            <span style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.75 }}>{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── 年齢別 ── */}
         {(activeTab === "nursery_infant" || activeTab === "nursery_preschool") && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {ageGroups.map((g, i) => (
@@ -180,26 +205,26 @@ export default function GuidelinesPage() {
           </div>
         )}
 
-        {/* 参考文書タブ */}
+        {/* ── 参考文書 ── */}
         {activeTab === "reference" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <p style={{ fontSize: 13, color: "#9A8A7A", margin: 0, lineHeight: 1.8 }}>
-              保育所保育指針・幼稚園教育要領などの公式文書へのリンクです。各リンクは外部サイト（PDF）が開きます。
+              保育所保育指針・幼稚園教育要領などの公式文書と解説書へのリンクです。各リンクは外部サイト（PDF）が開きます。
             </p>
-            {REFERENCE_LINKS.map((cat) => (
+            {REFERENCE_CATEGORIES.map((cat) => (
               <div key={cat.category} style={{ background: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,183,178,0.18)", borderRadius: 16, overflow: "hidden" }}>
                 <div style={{ padding: "14px 22px", borderBottom: `1px solid ${cat.color}40`, background: `${cat.color}12`, display: "flex", alignItems: "center", gap: 8 }}>
                   <div style={{ width: 4, height: 18, borderRadius: 2, background: cat.color }}/>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#4A4A4A", margin: 0, fontFamily: "'Noto Serif JP', serif" }}>{cat.category}</p>
                 </div>
-                <div style={{ padding: "8px 16px" }}>
-                  {cat.links.map((link) => (
+                <div style={{ padding: "4px 16px" }}>
+                  {cat.links.map((link, j) => (
                     <a
                       key={link.url}
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 8px", borderBottom: "1px solid rgba(255,183,178,0.1)", textDecoration: "none", gap: 12 }}
+                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 8px", borderBottom: j < cat.links.length - 1 ? "1px solid rgba(255,183,178,0.1)" : "none", textDecoration: "none", gap: 12 }}
                     >
                       <div>
                         <p style={{ fontSize: 14, fontWeight: 600, color: "#4A4A4A", margin: "0 0 3px" }}>{link.label}</p>
@@ -221,7 +246,7 @@ export default function GuidelinesPage() {
           </div>
         )}
 
-        {/* 目次タブ */}
+        {/* ── 目次 ── */}
         {activeTab === "chapters" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {GUIDELINE_CHAPTERS.map(c => (
@@ -248,7 +273,6 @@ export default function GuidelinesPage() {
 function AgeGroupCard({ guideline, isOpen, onToggle }: { guideline: AgeGroupGuideline; isOpen: boolean; onToggle: () => void }) {
   return (
     <div style={{ background: "rgba(255,255,255,0.85)", border: "1px solid rgba(255,183,178,0.18)", borderRadius: 16, overflow: "hidden" }}>
-      {/* ヘッダー（クリックで開閉） */}
       <button
         onClick={onToggle}
         style={{ width: "100%", padding: "18px 22px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
@@ -265,58 +289,39 @@ function AgeGroupCard({ guideline, isOpen, onToggle }: { guideline: AgeGroupGuid
         <span style={{ fontSize: 18, color: "#C4A898", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▾</span>
       </button>
 
-      {/* 展開コンテンツ */}
       {isOpen && (
         <div style={{ padding: "0 22px 22px", borderTop: "1px solid rgba(255,183,178,0.12)" }}>
-
-          {/* 発達の特徴 */}
           <Section title="発達の主な特徴" color="#FFB7B2">
             <p style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.8, margin: 0 }}>{guideline.developmentFeatures}</p>
           </Section>
-
-          {/* 保育士の姿勢 */}
           <Section title="保育士の姿勢と関わりの視点" color="#B2E2F2">
             <p style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.8, margin: 0 }}>{guideline.teacherStance}</p>
           </Section>
-
-          {/* ねらい */}
           <Section title="ねらい" color="#D1E8E2">
-            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
-              {guideline.goals.map((goal, i) => (
-                <li key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: "#D1E8E2", border: "1px solid #9EC8BC", marginTop: 7 }}/>
-                  <span style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.75 }}>{goal}</span>
-                </li>
-              ))}
-            </ul>
+            <BulletList items={guideline.goals} dotColor="#D1E8E2" dotBorder="#9EC8BC" />
           </Section>
-
-          {/* 内容 */}
           <Section title="内容" color="#FFE4B2">
-            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
-              {guideline.contentItems.map((item, i) => (
-                <li key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: "#FFE4B2", border: "1px solid #F0C878", marginTop: 7 }}/>
-                  <span style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.75 }}>{item}</span>
-                </li>
-              ))}
-            </ul>
+            <BulletList items={guideline.contentItems} dotColor="#FFE4B2" dotBorder="#F0C878" />
           </Section>
-
-          {/* 配慮事項 */}
           <Section title="主な配慮事項" color="#F2D1E8" last>
-            <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
-              {guideline.considerations.map((c, i) => (
-                <li key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: "#F2D1E8", border: "1px solid #D898C0", marginTop: 7 }}/>
-                  <span style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.75 }}>{c}</span>
-                </li>
-              ))}
-            </ul>
+            <BulletList items={guideline.considerations} dotColor="#F2D1E8" dotBorder="#D898C0" />
           </Section>
         </div>
       )}
     </div>
+  )
+}
+
+function BulletList({ items, dotColor, dotBorder }: { items: string[]; dotColor: string; dotBorder: string }) {
+  return (
+    <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
+      {items.map((item, i) => (
+        <li key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+          <span style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: dotColor, border: `1px solid ${dotBorder}`, marginTop: 7 }}/>
+          <span style={{ fontSize: 13, color: "#5A5A5A", lineHeight: 1.75 }}>{item}</span>
+        </li>
+      ))}
+    </ul>
   )
 }
 

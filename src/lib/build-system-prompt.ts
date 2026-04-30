@@ -1,5 +1,5 @@
 import { FIELD_DEFINITIONS, FACILITY_LABELS } from "./format-definitions"
-import { buildGuidelineReference } from "./hoiku-shishin"
+import { buildGuidelineReference, buildJuNoSugataReference } from "./hoiku-shishin"
 import type { UserFormatConfig } from "@prisma/client"
 
 const HEADER_SLUGS = ["class_name", "week_date", "teacher_name", "enrollment_count", "month_plan_week"]
@@ -13,11 +13,14 @@ export function buildWeeklyPlanSystemPrompt(config: UserFormatConfig): string {
     .filter(Boolean)
 
   const guidelineRef = buildGuidelineReference(config.facilityType)
+  const juNoSugata  = buildJuNoSugataReference()
 
   return `あなたは${facilityLabel}の担任保育士が週案を作成するのをサポートするAIアシスタントです。
-保育所保育指針（平成29年告示）・幼稚園教育要領に準拠した、実務で使える週案を一緒に作ります。
+保育所保育指針（平成29年告示）・幼稚園教育要領・幼保連携型認定こども園教育・保育要領に準拠した、実務で使える週案を一緒に作ります。
 
 ${guidelineRef}
+
+${juNoSugata}
 
 【このクラスの週案フォーマット】
 記入が必要な項目（順番に埋めていきます）：
