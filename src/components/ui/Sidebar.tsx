@@ -21,12 +21,19 @@ const navItems = [
   { href: "/plans",          label: "ホーム",         icon: "home" },
   { href: "/weekly-plan/new", label: "週案を作る",     icon: "pen", primary: true },
   { href: "/community",      label: "コミュニティ",   icon: "leaf" },
+  { href: "/guidelines",     label: "保育指針",       icon: "book" },
   { href: "/settings/format", label: "フォーマット設定", icon: "file" },
   { href: "/profile",        label: "マイページ",     icon: "user" },
   { href: "#logout",         label: "ログアウト",     icon: "logout", isLogout: true },
 ];
 
 const icons: Record<string, React.ReactElement> = {
+  book: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+  ),
   home: (
     <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
       <path d="M2 7L8 2L14 7V14H10V10H6V14H2V7Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round" fill="none"/>

@@ -1,4 +1,5 @@
 import { FIELD_DEFINITIONS, FACILITY_LABELS } from "./format-definitions"
+import { buildGuidelineReference } from "./hoiku-shishin"
 import type { UserFormatConfig } from "@prisma/client"
 
 const HEADER_SLUGS = ["class_name", "week_date", "teacher_name", "enrollment_count", "month_plan_week"]
@@ -11,12 +12,23 @@ export function buildWeeklyPlanSystemPrompt(config: UserFormatConfig): string {
     .map(slug => FIELD_DEFINITIONS[slug as keyof typeof FIELD_DEFINITIONS]?.label)
     .filter(Boolean)
 
+  const guidelineRef = buildGuidelineReference(config.facilityType)
+
   return `あなたは${facilityLabel}の担任保育士が週案を作成するのをサポートするAIアシスタントです。
-保育所保育指針・幼稚園教育要領に準拠した、実務で使える週案を一緒に作ります。
+保育所保育指針（平成29年告示）・幼稚園教育要領に準拠した、実務で使える週案を一緒に作ります。
+
+${guidelineRef}
 
 【このクラスの週案フォーマット】
 記入が必要な項目（順番に埋めていきます）：
 ${fieldLabels.map((label, i) => `${i + 1}. ${label}`).join("\n")}
+
+【週案作成の思考プロセス（保育指針に基づく）】
+1. 対話から「子どもが実際にしていたこと・言葉・様子」を具体的に拾う
+2. その姿を上記の年齢別ねらいと5領域（健康・人間関係・環境・言葉・表現）の視点で発達的に意味づける
+3. 保育指針の「ねらい」文型（「〜しようとする」「〜を楽しむ」「〜を育てる」）で週のねらいを導く
+4. 援助は「〜と声をかける」「〜の気持ちを代弁する」「〜に気づけるよう〜する」など具体的な言動で書く
+5. 保育指針の配慮事項（個差・安全・家庭連携など）も必要に応じて反映する
 
 【会話の進め方】
 - 最初の挨拶は「先週の子どもたちの様子を教えてください。どんな遊びをしていましたか？」のみ
@@ -37,12 +49,6 @@ ${fieldLabels.map((label, i) => `${i + 1}. ${label}`).join("\n")}
 
 使用できる項目名（このまま使うこと・変形・番号付与禁止）：
 ${fieldLabels.join("\n")}
-
-【週案作成の思考プロセス】
-1. 対話から「子どもが実際にしていたこと・言葉・様子」を具体的に拾う
-2. その姿を発達の視点で意味づける（何を獲得しようとしているか）
-3. そこから来週のねらいを導く（「〜しようとする」「〜を楽しむ」の文型）
-4. 援助は「〜と声をかける」「〜の気持ちを代弁する」「〜に気づけるよう〜する」など具体的な言動で書く
 
 【禁止事項】
 - ユーザーの1回目の返答の直後に提案すること（必ず深掘り質問を挟む）
