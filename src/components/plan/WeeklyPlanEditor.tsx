@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { FIELD_DEFINITIONS } from "@/lib/format-definitions";
 import type { FieldSlug } from "@/lib/format-definitions";
 import { updateWeeklyPlanFields, finalizePlan } from "@/app/actions/weekly-plan";
@@ -77,6 +77,8 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
   const [streaming, setStreaming] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
   const [focusedField, setFocusedField] = useState<FieldSlug | null>(null);
+  const [mobileTab, setMobileTab] = useState<"chat" | "plan">("chat");
+  const [isMobile, setIsMobile] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initializedRef = useRef(false);
@@ -84,6 +86,13 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const scheduleAutoSave = useCallback(
     (newFields: Record<string, string>) => {
@@ -210,15 +219,54 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
   const headerFields = activeFields.filter(f => HEADER_FIELDS.includes(f));
   const contentFields = activeFields.filter(f => !HEADER_FIELDS.includes(f));
 
+  // モバイルでフィールドをフォーカスしたときにAIタブに切り替え
+  const handleFieldFocusMobile = useCallback((slug: FieldSlug) => {
+    handleFieldFocus(slug);
+    if (isMobile) setMobileTab("chat");
+  }, [handleFieldFocus, isMobile]);
+
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "#FDF5E6" }}>
+    <div
+      className="flex overflow-hidden"
+      style={{
+        background: "#FDF5E6",
+        height: isMobile ? "calc(100dvh - 72px)" : "100vh",
+        flexDirection: isMobile ? "column" : "row",
+      }}
+    >
+      {/* ── モバイルタブバー ── */}
+      {isMobile && (
+        <div
+          className="flex flex-shrink-0"
+          style={{ borderBottom: "1px solid rgba(255,183,178,0.2)", background: "rgba(255,255,255,0.9)" }}
+        >
+          {(["chat", "plan"] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setMobileTab(tab)}
+              className="flex-1 py-3 text-sm font-medium transition-colors cursor-pointer"
+              style={{
+                color: mobileTab === tab ? "#B07870" : "#A09080",
+                background: "none",
+                border: "none",
+                borderBottom: mobileTab === tab ? "2px solid #FFB7B2" : "2px solid transparent",
+              }}
+            >
+              {tab === "chat" ? "💬 AI相談" : "📋 週案"}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* ── Left: Plan preview ── */}
       <div
-        className="w-[40%] flex flex-col overflow-hidden"
+        className="flex flex-col overflow-hidden"
         style={{
+          display: isMobile ? (mobileTab === "plan" ? "flex" : "none") : "flex",
+          width: isMobile ? "100%" : "40%",
           background: "rgba(255,255,255,0.72)",
           backdropFilter: "blur(12px)",
-          borderRight: "1px solid rgba(255,183,178,0.18)",
+          borderRight: isMobile ? "none" : "1px solid rgba(255,183,178,0.18)",
         }}
       >
         <div className="px-6 py-4 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,183,178,0.15)" }}>
@@ -283,7 +331,7 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
                   zIndex: isFocused ? 2 : 1,
                   position: "relative",
                 }}
-                onClick={() => { if (isDimmed) handleFieldFocus(slug); }}
+                onClick={() => { if (isDimmed) handleFieldFocusMobile(slug); }}
               >
                 <div className="flex items-center justify-between mb-1">
                   <label
@@ -307,7 +355,7 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
                 <textarea
                   value={fields[slug] ?? ""}
                   onChange={e => handleFieldChange(slug, e.target.value)}
-                  onFocus={() => handleFieldFocus(slug)}
+                  onFocus={() => handleFieldFocusMobile(slug)}
                   rows={isFocused ? 5 : 3}
                   style={{
                     width: "100%",
@@ -344,7 +392,10 @@ export function WeeklyPlanEditor({ planId, activeFields }: Props) {
       </div>
 
       {/* ── Right: Chat ── */}
-      <div className="flex-1 flex flex-col overflow-hidden" style={{ background: "#FDF5E6" }}>
+      <div
+        className="flex flex-col overflow-hidden"
+        style={{ background: "#FDF5E6", display: isMobile ? (mobileTab === "chat" ? "flex" : "none") : "flex", flex: 1 }}
+      >
         <div
           className="px-6 py-4 flex-shrink-0"
           style={{

@@ -59,8 +59,35 @@ body {
   box-shadow: 0 2px 0 0 rgba(255, 183, 178, 0.3);
 }
 
-/* Smooth gradient animation for hero */
-@keyframes float {
+/* Mobile safe-area support */
+.pb-safe {
+  padding-bottom: max(72px, env(safe-area-inset-bottom));
+}
+
+/* Responsive grid utilities */
+.preview-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 767px) {
+  .preview-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-8px); }
 }

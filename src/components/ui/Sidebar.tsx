@@ -285,3 +285,65 @@ function LogoutIcon() {
     </svg>
   );
 }
+
+// ── モバイル用ボトムナビ ──────────────────────────────────────
+const MOBILE_NAV = [
+  { href: "/plans",          label: "ホーム",    icon: "home" },
+  { href: "/weekly-plan/new", label: "週案を作る", icon: "pen", primary: true },
+  { href: "/guidelines",     label: "保育指針",  icon: "book" },
+  { href: "/community",      label: "コミュニティ", icon: "leaf" },
+  { href: "/profile",        label: "マイページ", icon: "user" },
+];
+
+export function MobileBottomNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 flex items-stretch"
+      style={{
+        background: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderTop: "1px solid rgba(255,183,178,0.2)",
+        boxShadow: "0 -2px 16px rgba(0,0,0,0.06)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        height: 72,
+      }}
+    >
+      {MOBILE_NAV.map(({ href, label, icon, primary }) => {
+        const isActive = pathname === href || (href !== "/plans" && pathname.startsWith(href));
+
+        if (primary) {
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center justify-center flex-1 gap-0.5"
+              style={{ color: "#4A4A4A" }}
+            >
+              <div
+                className="w-11 h-11 rounded-2xl flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, #FFB7B2, #ffcac6)", boxShadow: "0 2px 10px rgba(255,183,178,0.45)" }}
+              >
+                {icons[icon]}
+              </div>
+            </Link>
+          );
+        }
+
+        return (
+          <Link
+            key={href}
+            href={href}
+            className="flex flex-col items-center justify-center flex-1 gap-1 pt-1"
+            style={{ color: isActive ? "#B07870" : "#A09080" }}
+          >
+            <span style={{ opacity: isActive ? 1 : 0.65 }}>{icons[icon]}</span>
+            <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 400, letterSpacing: "0.02em" }}>{label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}

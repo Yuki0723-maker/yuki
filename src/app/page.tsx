@@ -44,8 +44,8 @@ export default async function HomePage() {
       </header>
 
       {/* Hero */}
-      <section style={{ position: "relative", zIndex: 10, padding: "72px 0 80px", textAlign: "center" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 40px" }}>
+      <section style={{ position: "relative", zIndex: 10, padding: "clamp(40px,6vw,72px) 0 clamp(48px,6vw,80px)", textAlign: "center" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 clamp(20px,5vw,40px)" }}>
 
           {/* バッジ */}
           <div style={{ marginBottom: 36 }}>
@@ -153,7 +153,7 @@ export default async function HomePage() {
       </section>
 
       {/* アプリUI プレビューカード */}
-      <section style={{ position: "relative", zIndex: 10, padding: "0 40px 100px" }}>
+      <section style={{ position: "relative", zIndex: 10, padding: "0 clamp(16px,4vw,40px) clamp(60px,8vw,100px)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <div style={{
             background: "rgba(255,255,255,0.85)",
@@ -179,9 +179,9 @@ export default async function HomePage() {
               <span style={{ marginLeft: 8, fontSize: 12, color: "#B4A494", letterSpacing: "0.05em" }}>ことのは — AIアシスタント</span>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 320 }}>
+            <div className="preview-card-grid" style={{ minHeight: 280 }}>
               {/* 左：チャット */}
-              <div style={{ padding: "28px 32px", borderRight: "1px solid rgba(255,183,178,0.12)" }}>
+              <div className="preview-card-left" style={{ padding: "24px 28px", borderRight: "1px solid rgba(255,183,178,0.12)" }}>
                 <p style={{ fontSize: 11, color: "#C4B4A4", marginBottom: 18, letterSpacing: "0.06em", fontWeight: 600 }}>AIとの対話</p>
 
                 <div style={{
@@ -276,7 +276,7 @@ export default async function HomePage() {
       </section>
 
       {/* Features */}
-      <section style={{ position: "relative", zIndex: 10, padding: "0 40px 120px" }}>
+      <section style={{ position: "relative", zIndex: 10, padding: "0 clamp(16px,4vw,40px) clamp(60px,8vw,120px)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <p style={{
             textAlign: "center",
@@ -289,7 +289,7 @@ export default async function HomePage() {
           }}>
             保育士さんの「ちょうどいい」を目指して
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          <div className="features-grid">
             {[
               {
                 icon: <GuidanceIcon />,

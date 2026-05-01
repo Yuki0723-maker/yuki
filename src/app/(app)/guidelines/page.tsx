@@ -53,7 +53,7 @@ export default function GuidelinesPage() {
       <div style={{ padding: "24px 32px", maxWidth: 920, margin: "0 auto" }}>
 
         {/* タブ */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 28, overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4 }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
@@ -64,6 +64,8 @@ export default function GuidelinesPage() {
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: "pointer",
+                flexShrink: 0,
+                whiteSpace: "nowrap",
                 border: activeTab === tab.id ? "1px solid rgba(255,183,178,0.5)" : "1px solid rgba(0,0,0,0.08)",
                 background: activeTab === tab.id ? "rgba(255,183,178,0.15)" : "white",
                 color: activeTab === tab.id ? "#B07870" : "#8A7A6A",
