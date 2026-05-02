@@ -222,3 +222,41 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+// ─────────────────────────────────────────────
+// X 運用サポート
+// ─────────────────────────────────────────────
+
+model XPostIdea {
+  id        String        @id @default(cuid())
+  title     String
+  memo      String        @db.Text
+  tags      String[]
+  status    XIdeaStatus   @default(IDEA)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  generatedPosts XGeneratedPost[]
+
+  @@index([status, createdAt])
+}
+
+enum XIdeaStatus {
+  IDEA       // アイデアのみ
+  GENERATED  // 投稿文生成済み
+  POSTED     // 投稿済み
+}
+
+model XGeneratedPost {
+  id      String @id @default(cuid())
+  ideaId  String
+  content String @db.Text
+  tone    String // casual / professional / educational / engaging
+
+  createdAt DateTime @default(now())
+
+  idea XPostIdea @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId, createdAt])
+}
