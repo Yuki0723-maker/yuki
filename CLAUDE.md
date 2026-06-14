@@ -1,131 +1,76 @@
-# HoikuNote — プロジェクト設計書
+# ホイクペディア管理アプリ — プロジェクト設計書
 
 ## 概要
-保育士が週の様子をメモするだけでAIが指導計画を作成し、全国の保育士と知見を共有できるSaaSプラットフォーム。
+ホイクペディアの **候補者・園（企業）・選考状況** を 1 つの Web アプリで一元管理する社内ツール。
+今後の更新・管理はアプリ側を主とし、Google スプレッドシートはアプリから書き出すミラー（バックアップ）として残す（Phase 4 で実装）。
 
 ## 技術スタック
 
 | レイヤー | 技術 |
 |---------|------|
-| フロントエンド | Next.js 15 (App Router) + TypeScript |
+| フレームワーク | Next.js 15 (App Router) + TypeScript |
+| DB・認証 | Supabase (PostgreSQL + Supabase Auth) |
 | スタイリング | Tailwind CSS v4 |
-| 認証 | NextAuth.js v5 (Google / メール) |
-| ORM | Prisma + PostgreSQL |
-| AI | Anthropic Claude API (claude-sonnet-4-6) |
-| リアルタイム | Supabase Realtime (週案フィード) |
 | ホスティング | Vercel |
+| Google 連携 | Google Sheets API（サービスアカウント / Phase 4） |
 
 ## ディレクトリ構成
 
 ```
 src/
 ├── app/
-│   ├── (auth)/
-│   │   ├── login/page.tsx          # ログイン画面
-│   │   └── register/page.tsx       # 新規登録画面
-│   ├── (dashboard)/
-│   │   ├── layout.tsx              # サイドバー付きレイアウト
-│   │   ├── dashboard/page.tsx      # ダッシュボード
-│   │   ├── notes/
-│   │   │   ├── new/page.tsx        # 週の様子入力
-│   │   │   └── [id]/page.tsx       # 週案詳細・編集
-│   │   ├── feed/page.tsx           # コミュニティフィード
-│   │   └── settings/page.tsx       # 設定
-│   └── api/
-│       ├── auth/[...nextauth]/route.ts
-│       ├── notes/route.ts
-│       ├── plans/
-│       │   ├── route.ts
-│       │   └── generate/route.ts   # Claude API呼び出し
-│       └── posts/route.ts
-├── components/
-│   ├── auth/                        # 認証コンポーネント
-│   ├── notes/                       # 週案入力関連
-│   ├── plans/                       # 計画表示・編集
-│   ├── feed/                        # コミュニティフィード
-│   └── ui/                          # 汎用UIコンポーネント
-└── lib/
-    ├── auth.ts                      # NextAuth設定
-    ├── db.ts                        # Prismaクライアント
-    ├── claude.ts                    # Claude API + システムプロンプト
-    └── utils.ts
-prisma/
-└── schema.prisma                    # DBスキーマ
+│   ├── login/page.tsx              # ログイン（Supabase Auth）
+│   ├── (app)/                      # 認証必須レイアウト（上部ナビ付き）
+│   │   ├── layout.tsx
+│   │   ├── candidates/             # 候補者 一覧・新規・詳細/編集 + actions.ts
+│   │   ├── organizations/          # 園・企業 一覧・新規・詳細/編集 + actions.ts
+│   │   ├── placements/             # 選考（メイン）一覧・新規・詳細/編集 + actions.ts
+│   │   └── settings/page.tsx
+│   ├── layout.tsx                  # ルート
+│   ├── page.tsx                    # /placements へリダイレクト
+│   └── globals.css
+├── components/                     # NavBar / 各フォーム / ui.tsx / DeleteButton
+├── lib/
+│   ├── supabase/{client,server,middleware}.ts
+│   └── types.ts
+└── middleware.ts                   # 認証ガード・セッション更新
+supabase/
+└── schema.sql                      # テーブル + RLS（SQL Editor で実行）
 ```
 
-## DBスキーマ概要
+## データモデル
 
-```
-User ──< WeeklyNote ──1 Plan
-     ──< Post ──< Like
-              ──< SavedPost
-```
+3 テーブル。中心は「選考（placements）」＝候補者 × 園 の関係。
 
-- **User**: ユーザー（担当クラス・都道府県を保持）
-- **WeeklyNote**: 週の様子メモ（AIへの入力）
-- **Plan**: AI生成された指導計画（ねらい/内容/援助）
-- **Post**: コミュニティ投稿（活動アイデア共有）
+- **organizations**: 園・企業（relation_type: 契約園/連携園/その他）
+- **candidates**: 候補者（status: 面談前/選考中/内定/保留/見送り）
+- **placements**: 選考（stage: 書類/一次面接/二次面接/内定/見送り、stage_status: 調整中/確定/完了）
+
+カラム定義の正は `supabase/schema.sql`、TypeScript 型は `src/lib/types.ts`。
+
+## 認証・セキュリティ
+- Supabase Auth（メール + パスワード）。当面 Yuki 単独利用。
+- `middleware.ts` が未ログインを `/login` にリダイレクト。
+- RLS は authenticated ユーザーに全レコードへのフルアクセスを許可。
 
 ## 環境変数
-
 ```env
-# 認証
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=...
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-
-# DB
-DATABASE_URL=postgresql://...
-
-# AI
-ANTHROPIC_API_KEY=...
-
-# Supabase (Phase 2)
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+# Phase 4: GOOGLE_SERVICE_ACCOUNT_JSON / TARGET_SHEET_ID
 ```
 
-## AIシステムプロンプト方針
-
-Claude APIには以下を組み込む：
-- 「保育所保育指針」「幼保連携型認定こども園教育・保育要領」の文言に準拠
-- 子ども主体の保育観を反映した表現
-- ねらい・内容・援助・環境構成の4軸で出力
-- 年齢発達特性を考慮した内容
-
-## フェーズ別実装計画
-
-### Phase 1（MVP）
-- [x] プロジェクト設計・CLAUDE.md
-- [x] DBスキーマ設計
-- [ ] 認証画面（ログイン・登録）
-- [ ] 週の様子入力 → AI生成 → 保存
-- [ ] 週案一覧・詳細
-
-### Phase 2（コミュニティ）
-- [ ] 週案フィード（Supabase Realtime）
-- [ ] 活動アイデア投稿・いいね・保存
-- [ ] 年齢別・テーマ別掲示板
-
-### Phase 3（パーソナライズ）
-- [ ] 担当クラス・年齢に合わせた活動提案
-- [ ] 季節・行事との連動
-- [ ] 成長記録との連動
-
-## セキュリティ方針
-
-- 子ども名・園名などの個人情報はフィード上で非表示
-- 公開範囲を `PUBLIC / MEMBERS_ONLY / PRIVATE` の3段階で管理
-- WeeklyNoteのraw textは本人のみ閲覧可能
-- Claude APIへ送信する際に個人情報をマスキング処理する（Phase 2以降）
+## 実装フェーズ
+- [x] Phase 0 — スキーマ + Auth + ログイン
+- [x] Phase 1 — organizations / candidates CRUD
+- [x] Phase 2 — placements CRUD・メイン一覧
+- [ ] Phase 3 — Sheets からの初回インポートスクリプト
+- [ ] Phase 4 — アプリ → Sheets ミラー書き出し（ボタン + Cron）
+- [ ] Phase 5 — ダッシュボード集計ほか
 
 ## 開発コマンド
-
 ```bash
-npm run dev          # 開発サーバー起動
-npm run build        # ビルド
-npm run db:push      # DBスキーマ反映（開発用）
-npm run db:migrate   # マイグレーション実行
-npm run db:studio    # Prisma Studio起動
+npm run dev    # 開発サーバー
+npm run build  # ビルド
+npm run lint   # Lint
 ```
